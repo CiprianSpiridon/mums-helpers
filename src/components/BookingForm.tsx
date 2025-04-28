@@ -379,7 +379,7 @@ const BookingForm = () => {
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Booking Confirmed!</h2>
-            <p className="text-gray-600 mb-6">Your cleaning service has been scheduled. We'll send you a confirmation email shortly.</p>
+            <p className="text-gray-600 mb-6">Your cleaning service has been scheduled. We&apos;ll send you a confirmation email shortly.</p>
             
             {/* Booking Summary */}
             <div className="max-w-md mx-auto bg-gray-50 p-6 rounded-lg mb-6">
