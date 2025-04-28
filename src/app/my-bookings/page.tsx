@@ -156,7 +156,7 @@ const MyBookingsPage = () => {
   return (
     <>
       <Header />
-      <main className="flex min-h-screen flex-col items-center pt-28 pb-16 px-4 sm:px-6 bg-gray-50">
+      <main className="flex min-h-screen flex-col items-center justify-start pt-20 pb-16 px-0 sm:px-6 bg-gray-50">
         <div className="w-full max-w-6xl">
           <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg mb-8">
             <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">
