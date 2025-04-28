@@ -22,6 +22,20 @@ const ServiceIcons = {
   )
 };
 
+// Property Type Icons
+const PropertyIcons = {
+  house: (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+    </svg>
+  ),
+  flat: (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+    </svg>
+  )
+};
+
 const BookingForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [serviceType, setServiceType] = useState('regular');
@@ -30,6 +44,8 @@ const BookingForm = () => {
   const [duration, setDuration] = useState(2);
   const [address, setAddress] = useState('');
   const [instructions, setInstructions] = useState('');
+  const [propertyType, setPropertyType] = useState('house');
+  const [numRooms, setNumRooms] = useState(2);
   
   // Step 2: Contact info
   const [name, setName] = useState('');
@@ -53,6 +69,8 @@ const BookingForm = () => {
       bookingTime,
       duration,
       address,
+      propertyType,
+      numRooms,
       instructions,
       name,
       email,
@@ -147,6 +165,71 @@ const BookingForm = () => {
                   <h3 className="font-medium">Move-in/out</h3>
                 </div>
                 <p className="text-sm text-gray-500">Complete cleaning service when moving in or out.</p>
+              </div>
+            </div>
+
+            {/* Property Type Cards */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Property Type
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div 
+                  onClick={() => setPropertyType('house')}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                    propertyType === 'house' 
+                      ? 'border-pink-500 bg-pink-50' 
+                      : 'border-gray-200 hover:border-pink-200'
+                  }`}
+                >
+                  <div className="flex items-center mb-2">
+                    <div className={`p-2 rounded-full mr-2 ${propertyType === 'house' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
+                      {PropertyIcons.house}
+                    </div>
+                    <h3 className="font-medium">House</h3>
+                  </div>
+                  <p className="text-sm text-gray-500">Villa, townhouse or independent home</p>
+                </div>
+
+                <div 
+                  onClick={() => setPropertyType('flat')}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                    propertyType === 'flat' 
+                      ? 'border-pink-500 bg-pink-50' 
+                      : 'border-gray-200 hover:border-pink-200'
+                  }`}
+                >
+                  <div className="flex items-center mb-2">
+                    <div className={`p-2 rounded-full mr-2 ${propertyType === 'flat' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
+                      {PropertyIcons.flat}
+                    </div>
+                    <h3 className="font-medium">Flat/Apartment</h3>
+                  </div>
+                  <p className="text-sm text-gray-500">Apartment or flat in a building</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Number of Rooms */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Number of Rooms
+              </label>
+              <div className="flex items-center space-x-1">
+                {[1, 2, 3, 4, 5, '6+'].map((rooms) => (
+                  <button
+                    key={rooms}
+                    type="button"
+                    onClick={() => setNumRooms(typeof rooms === 'string' ? 6 : rooms)}
+                    className={`flex-1 py-2 border-2 rounded-lg text-sm font-medium transition-colors ${
+                      (typeof rooms === 'string' && numRooms >= 6) || numRooms === rooms
+                        ? 'bg-pink-500 text-white border-pink-500'
+                        : 'border-gray-300 text-gray-700 hover:border-pink-300'
+                    }`}
+                  >
+                    {rooms}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -389,6 +472,11 @@ const BookingForm = () => {
                 <div className="text-right font-medium">
                   {serviceType === 'regular' ? 'Regular Cleaning' : 
                    serviceType === 'deep' ? 'Deep Cleaning' : 'Move-in/out Cleaning'}
+                </div>
+                
+                <div className="text-gray-600 text-left">Property:</div>
+                <div className="text-right font-medium">
+                  {propertyType === 'house' ? 'House' : 'Flat/Apartment'}, {numRooms === 6 ? '6+' : numRooms} rooms
                 </div>
                 
                 <div className="text-gray-600 text-left">Date:</div>
