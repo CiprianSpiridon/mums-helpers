@@ -59,6 +59,7 @@ interface GoogleMapWindow extends Window {
 
 interface GoogleMap {
   setCenter: (latLng: LatLng) => void;
+  getCenter: () => LatLng | null;
   // Ensure this listener signature matches usage
   addListener: (event: string, callback: (e: { latLng: LatLng }) => void) => void;
 }
@@ -209,129 +210,55 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
       const geocoderInstance = new googleWindow.google.maps.Geocoder();
       setGeocoder(geocoderInstance);
       
-      /* --- Restore marker creation --- */
-      // Create marker - try advanced marker first, fallback to regular marker
-      try {
-        // Verify marker library is loaded
-        if (!googleWindow.google?.maps?.marker) {
-          console.warn('Marker library not loaded, falling back to standard marker');
-          throw new Error("Google Maps Marker library not loaded.");
+      // Function to get address from coordinates
+      const updateAddressFromLocation = (location: LatLng | LatLngLiteral) => {
+        // Ensure we have lat/lng values
+        let lat: number;
+        let lng: number;
+        
+        // Check if location is a LatLng object with callable methods
+        if ('lat' in location && typeof location.lat === 'function' && 
+            'lng' in location && typeof location.lng === 'function') {
+          // It's a LatLng object
+          lat = location.lat();
+          lng = location.lng();
+        } else if ('lat' in location && typeof location.lat === 'number' && 
+                  'lng' in location && typeof location.lng === 'number') {
+          // It's a LatLngLiteral object with number properties
+          lat = location.lat;
+          lng = location.lng;
+        } else {
+          console.error('Invalid location object:', location);
+          return; // Exit if we can't extract coordinates
         }
         
-        console.log('Creating advanced marker...');
-        // Try to create advanced marker
-        const advancedMarker = new googleWindow.google.maps.marker.AdvancedMarkerElement({
-          position: defaultLocation,
-          map: map,
-          draggable: true,
-        });
+        console.log('Getting address for location:', lat, lng);
         
-        setMarker(advancedMarker);
+        // Create LatLngLiteral for geocoder
+        const locationLiteral: LatLngLiteral = { lat, lng };
         
-        // Add dragend listener to marker
-        advancedMarker.addListener('dragend', () => {
-          // Get the marker position
-          const position = advancedMarker.position as LatLng | LatLngLiteral | null;
-          
-          if (position) {
-            let lat: number | undefined;
-            let lng: number | undefined;
-            
-            // Type guard to check if it's a LatLng object with callable methods
-            if ('lat' in position && typeof position.lat === 'function' && 
-                'lng' in position && typeof position.lng === 'function') {
-              lat = position.lat();
-              lng = position.lng();
-            } 
-            // Check if it's a LatLngLiteral object with number properties
-            else if ('lat' in position && typeof position.lat === 'number' && 
-                     'lng' in position && typeof position.lng === 'number') {
-              lat = position.lat;
-              lng = position.lng;
-            }
-
-            if (lat !== undefined && lng !== undefined) {
-              console.log('Advanced Marker dragged to:', lat, lng);
-              
-              // Explicitly create LatLngLiteral for geocoder
-              const locationLiteral: LatLngLiteral = { lat, lng };
-
-              // Get address from coordinates using the literal
-              geocoderInstance.geocode({ location: locationLiteral }, (results, status) => {
-                console.log('Geocode Status (Advanced Marker):', status);
-                console.log('Geocode Results (Advanced Marker):', results);
-                if (status === 'OK' && results && results[0]) {
-                  const address = results[0].formatted_address;
-                  console.log('Geocoded Address (Advanced Marker):', address);
-                  onSelectLocation(address, lat, lng);
-                } else {
-                  console.error('Geocode failed (Advanced Marker):', status);
-                }
-              });
-            } else {
-               console.error('Could not extract lat/lng from marker position:', position);
-            }
-          }
-        });
-      } catch (error) {
-        console.warn('Advanced markers not available, falling back to standard marker', error);
-        
-        // Fallback to standard marker
-        const standardMarker = new googleWindow.google.maps.Marker({
-          position: defaultLocation,
-          map: map,
-          draggable: true
-        });
-        
-        // Add dragend listener to marker
-        standardMarker.addListener('dragend', () => {
-          const position = standardMarker.getPosition();
-          
-          if (position) {
-            console.log('Standard Marker dragged to:', position.lat(), position.lng());
-            // Get address from coordinates
-            geocoderInstance.geocode({ location: position }, (results, status) => {
-              console.log('Geocode Status (Standard Marker):', status);
-              console.log('Geocode Results (Standard Marker):', results);
-              if (status === 'OK' && results && results[0]) {
-                const address = results[0].formatted_address;
-                console.log('Geocoded Address (Standard Marker):', address);
-                onSelectLocation(address, position.lat(), position.lng());
-              } else {
-                console.error('Geocode failed (Standard Marker):', status);
-              }
-            });
-          }
-        });
-      }
-      
-      // Add click listener to map
-      map.addListener('click', (e: { latLng: LatLng }) => {
-        const clickedLocation = e.latLng;
-        console.log('Map clicked at:', clickedLocation?.lat(), clickedLocation?.lng());
-        
-        if (marker && clickedLocation) {
-          // Advanced marker - use its setPosition method if available
-          if (typeof (marker as AdvancedMarkerElement).setPosition === 'function') {
-            (marker as AdvancedMarkerElement).setPosition(clickedLocation);
+        // Get address from coordinates
+        geocoderInstance.geocode({ location: locationLiteral }, (results, status) => {
+          console.log('Geocode Status:', status);
+          if (status === 'OK' && results && results[0]) {
+            const address = results[0].formatted_address;
+            console.log('Geocoded Address:', address);
+            onSelectLocation(address, lat, lng);
           } else {
-            console.warn('Could not determine how to set marker position programmatically.');
+            console.error('Geocode failed:', status);
           }
-        }
-        
-        if (clickedLocation) {
-          // Get address from coordinates
-          geocoderInstance.geocode({ location: clickedLocation }, (results, status) => {
-            console.log('Geocode Status (Map Click):', status);
-            console.log('Geocode Results (Map Click):', results);
-            if (status === 'OK' && results && results[0]) {
-              const address = results[0].formatted_address;
-              console.log('Geocoded Address (Map Click):', address);
-              onSelectLocation(address, clickedLocation.lat(), clickedLocation.lng());
-            } else {
-              console.error('Geocode failed (Map Click):', status);
-            }
-          });
+        });
+      };
+      
+      // Get initial address from the default location
+      updateAddressFromLocation(defaultLocation);
+      
+      // Add event listeners for when the map stops moving
+      // This will get the address at the center of the map
+      map.addListener('idle', () => {
+        const center = map.getCenter();
+        if (center) {
+          updateAddressFromLocation(center);
         }
       });
       
@@ -350,6 +277,15 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
         ref={mapRef} 
         className="w-full h-full"
       />
+      {/* Fixed center marker - always stays in the center of the map visually */}
+      {mapLoaded && (
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full pointer-events-none z-10">
+          <svg width="32" height="42" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 0C7.163 0 0 7.163 0 16C0 28 16 42 16 42C16 42 32 28 32 16C32 7.163 24.837 0 16 0ZM16 22C12.686 22 10 19.314 10 16C10 12.686 12.686 10 16 10C19.314 10 22 12.686 22 16C22 19.314 19.314 22 16 22Z" fill="#E91E63"/>
+            <path d="M16 10C12.686 10 10 12.686 10 16C10 19.314 12.686 22 16 22C19.314 22 22 19.314 22 16C22 12.686 19.314 10 16 10ZM16 20C13.791 20 12 18.209 12 16C12 13.791 13.791 12 16 12C18.209 12 20 13.791 20 16C20 18.209 18.209 20 16 20Z" fill="white"/>
+          </svg>
+        </div>
+      )}
       {!mapLoaded && !loadError && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
