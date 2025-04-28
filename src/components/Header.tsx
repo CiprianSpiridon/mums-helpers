@@ -16,7 +16,7 @@ const Header = () => {
         <div className="flex items-center">
           <Link href="/" className="flex items-center">
             <span className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">
-              MumzMaid
+              MumzHelpers
             </span>
           </Link>
         </div>
