@@ -141,7 +141,7 @@ const BookingForm = () => {
       </div>
 
       {/* Form Content */}
-      <div className="bg-white rounded-xl shadow-lg p-6 transition-all duration-300">
+      <div className="bg-white rounded-xl p-6 transition-all duration-300">
         {currentStep === 1 && (
           <div className="space-y-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Service Details</h2>
