@@ -1,4 +1,5 @@
 import React from "react";
+import BookingForm from "@/components/BookingForm";
 
 export default function Home() {
   return (
@@ -7,10 +8,7 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-center mb-8 text-pink-600">
           Book Your Maid Service
         </h1>
-        {/* Placeholder for the booking form component */}
-        <div className="text-center text-gray-500">
-          Booking form will go here...
-        </div>
+        <BookingForm />
       </div>
     </main>
   );
