@@ -112,7 +112,7 @@ const BookingForm = () => {
       <div className="bg-white rounded-xl shadow-lg p-6 transition-all duration-300">
         {currentStep === 1 && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Service Details</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Service Details</h2>
 
             {/* Service Type Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -128,9 +128,9 @@ const BookingForm = () => {
                   <div className={`p-2 rounded-full mr-2 ${serviceType === 'regular' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
                     {ServiceIcons.regular}
                   </div>
-                  <h3 className="font-medium">Regular Cleaning</h3>
+                  <h3 className="font-semibold text-gray-900">Regular Cleaning</h3>
                 </div>
-                <p className="text-sm text-gray-500">Standard cleaning service for maintaining your home.</p>
+                <p className="text-sm text-gray-700">Standard cleaning service for maintaining your home.</p>
               </div>
 
               <div 
@@ -145,9 +145,9 @@ const BookingForm = () => {
                   <div className={`p-2 rounded-full mr-2 ${serviceType === 'deep' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
                     {ServiceIcons.deep}
                   </div>
-                  <h3 className="font-medium">Deep Cleaning</h3>
+                  <h3 className="font-semibold text-gray-900">Deep Cleaning</h3>
                 </div>
-                <p className="text-sm text-gray-500">Intensive cleaning that covers hard-to-reach areas.</p>
+                <p className="text-sm text-gray-700">Intensive cleaning that covers hard-to-reach areas.</p>
               </div>
 
               <div 
@@ -162,15 +162,15 @@ const BookingForm = () => {
                   <div className={`p-2 rounded-full mr-2 ${serviceType === 'move' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
                     {ServiceIcons.move}
                   </div>
-                  <h3 className="font-medium">Move-in/out</h3>
+                  <h3 className="font-semibold text-gray-900">Move-in/out</h3>
                 </div>
-                <p className="text-sm text-gray-500">Complete cleaning service when moving in or out.</p>
+                <p className="text-sm text-gray-700">Complete cleaning service when moving in or out.</p>
               </div>
             </div>
 
             {/* Property Type Cards */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 Property Type
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
@@ -186,9 +186,9 @@ const BookingForm = () => {
                     <div className={`p-2 rounded-full mr-2 ${propertyType === 'house' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
                       {PropertyIcons.house}
                     </div>
-                    <h3 className="font-medium">House</h3>
+                    <h3 className="font-semibold text-gray-900">House</h3>
                   </div>
-                  <p className="text-sm text-gray-500">Villa, townhouse or independent home</p>
+                  <p className="text-sm text-gray-700">Villa, townhouse or independent home</p>
                 </div>
 
                 <div 
@@ -203,16 +203,16 @@ const BookingForm = () => {
                     <div className={`p-2 rounded-full mr-2 ${propertyType === 'flat' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
                       {PropertyIcons.flat}
                     </div>
-                    <h3 className="font-medium">Flat/Apartment</h3>
+                    <h3 className="font-semibold text-gray-900">Flat/Apartment</h3>
                   </div>
-                  <p className="text-sm text-gray-500">Apartment or flat in a building</p>
+                  <p className="text-sm text-gray-700">Apartment or flat in a building</p>
                 </div>
               </div>
             </div>
 
             {/* Number of Rooms */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 Number of Rooms
               </label>
               <div className="flex items-center space-x-1">
@@ -237,7 +237,7 @@ const BookingForm = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {/* Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-800 mb-1">
                   Date
                 </label>
                 <div className="relative">
@@ -258,7 +258,7 @@ const BookingForm = () => {
               
               {/* Time */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-800 mb-1">
                   Time
                 </label>
                 <div className="relative">
@@ -280,7 +280,7 @@ const BookingForm = () => {
 
             {/* Duration */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 Duration (hours)
               </label>
               <div className="flex items-center space-x-1">
@@ -303,7 +303,7 @@ const BookingForm = () => {
 
             {/* Address */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Address
               </label>
               <div className="relative">
@@ -326,7 +326,7 @@ const BookingForm = () => {
 
             {/* Special Instructions */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Special Instructions (Optional)
               </label>
               <textarea
@@ -356,11 +356,11 @@ const BookingForm = () => {
 
         {currentStep === 2 && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Contact Information</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Contact Information</h2>
             
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Your Name
               </label>
               <div className="relative">
@@ -384,7 +384,7 @@ const BookingForm = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-800 mb-1">
                   Email Address
                 </label>
                 <div className="relative">
@@ -406,7 +406,7 @@ const BookingForm = () => {
               
               {/* Phone */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-800 mb-1">
                   Phone Number
                 </label>
                 <div className="relative">
@@ -466,30 +466,30 @@ const BookingForm = () => {
             
             {/* Booking Summary */}
             <div className="max-w-md mx-auto bg-gray-50 p-6 rounded-lg mb-6">
-              <h3 className="font-semibold text-left mb-4">Booking Summary</h3>
+              <h3 className="font-bold text-gray-900 text-left mb-4">Booking Summary</h3>
               <div className="grid grid-cols-2 gap-y-2 text-sm">
-                <div className="text-gray-600 text-left">Service:</div>
-                <div className="text-right font-medium">
+                <div className="text-gray-700 font-medium text-left">Service:</div>
+                <div className="text-right font-semibold">
                   {serviceType === 'regular' ? 'Regular Cleaning' : 
                    serviceType === 'deep' ? 'Deep Cleaning' : 'Move-in/out Cleaning'}
                 </div>
                 
-                <div className="text-gray-600 text-left">Property:</div>
-                <div className="text-right font-medium">
+                <div className="text-gray-700 font-medium text-left">Property:</div>
+                <div className="text-right font-semibold">
                   {propertyType === 'house' ? 'House' : 'Flat/Apartment'}, {numRooms === 6 ? '6+' : numRooms} rooms
                 </div>
                 
-                <div className="text-gray-600 text-left">Date:</div>
-                <div className="text-right font-medium">{bookingDate}</div>
+                <div className="text-gray-700 font-medium text-left">Date:</div>
+                <div className="text-right font-semibold">{bookingDate}</div>
                 
-                <div className="text-gray-600 text-left">Time:</div>
-                <div className="text-right font-medium">{bookingTime}</div>
+                <div className="text-gray-700 font-medium text-left">Time:</div>
+                <div className="text-right font-semibold">{bookingTime}</div>
                 
-                <div className="text-gray-600 text-left">Duration:</div>
-                <div className="text-right font-medium">{duration} hours</div>
+                <div className="text-gray-700 font-medium text-left">Duration:</div>
+                <div className="text-right font-semibold">{duration} hours</div>
                 
-                <div className="text-gray-600 text-left">Name:</div>
-                <div className="text-right font-medium">{name}</div>
+                <div className="text-gray-700 font-medium text-left">Name:</div>
+                <div className="text-right font-semibold">{name}</div>
               </div>
             </div>
             
