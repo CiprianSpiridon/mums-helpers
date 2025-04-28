@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FormIcons } from './BookingIcons';
+import GoogleMapComponent from './GoogleMapComponent';
 
 interface AddressMapSelectorProps {
   address: string;
@@ -55,6 +56,18 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
     onAddressSelect(selectedAddress);
     setShowSuggestions(false);
   };
+
+  const handleMapLocationSelected = (selectedAddress: string) => {
+    setAddress(selectedAddress);
+    onAddressSelect(selectedAddress);
+    setShowSuggestions(false);
+  };
+  
+  // You should create these environment variables in your .env.local file:
+  // NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
+  // NEXT_PUBLIC_GOOGLE_MAPS_ID=your_map_id_here
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
+  const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_ID || '';
   
   return (
     <div className="space-y-2">
@@ -62,10 +75,24 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
         Address <span className="text-red-500">*</span>
       </label>
       
-      {/* Map placeholder - would be replaced with an actual map component */}
-      <div className="h-40 bg-gray-100 rounded-lg mb-2 flex items-center justify-center">
-        <p className="text-gray-500 text-sm">Map would be displayed here</p>
-      </div>
+      {/* Google Maps Component */}
+      <GoogleMapComponent 
+        onSelectLocation={(address) => handleMapLocationSelected(address)}
+        apiKey={apiKey}
+        mapId={mapId}
+      />
+      
+      {apiKey === '' && (
+        <div className="bg-yellow-50 p-3 rounded-lg text-sm text-yellow-800 mb-2">
+          <p className="font-semibold">Map configuration required:</p>
+          <ol className="list-decimal pl-5 mt-1 space-y-1">
+            <li>Create a <span className="font-mono">.env.local</span> file in your project root</li>
+            <li>Add <span className="font-mono">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key</span></li>
+            <li>Add <span className="font-mono">NEXT_PUBLIC_GOOGLE_MAPS_ID=your_map_id</span></li>
+            <li>Restart your development server</li>
+          </ol>
+        </div>
+      )}
       
       <div className="relative">
         <input
