@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 // Service option icons
 const ServiceIcons = {
@@ -37,6 +37,7 @@ const PropertyIcons = {
 };
 
 const BookingForm = () => {
+  const formRef = useRef<HTMLDivElement>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [serviceType, setServiceType] = useState('regular');
   const [bookingDate, setBookingDate] = useState('');
@@ -54,6 +55,12 @@ const BookingForm = () => {
 
   const handleNext = () => {
     setCurrentStep(currentStep + 1);
+    // Scroll to the top of the form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Also focus the form element for accessibility
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   const handleBack = () => {
@@ -79,10 +86,16 @@ const BookingForm = () => {
     
     // Move to confirmation step
     setCurrentStep(3);
+    
+    // Scroll to the top of the form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full" ref={formRef}>
       {/* Progress Steps */}
       <div className="flex items-center justify-between mb-8">
         {[1, 2, 3].map((step) => (
