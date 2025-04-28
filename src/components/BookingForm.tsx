@@ -2,9 +2,12 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import ProgressSteps from './booking/ProgressSteps';
-import ServiceDetailsStep from './booking/ServiceDetailsStep';
-import ContactInfoStep from './booking/ContactInfoStep';
-import ConfirmationStep from './booking/ConfirmationStep';
+import ServiceTypeStep from './booking/steps/ServiceTypeStep';
+import PropertyStep from './booking/steps/PropertyStep';
+import ScheduleStep from './booking/steps/ScheduleStep';
+import LocationStep from './booking/steps/LocationStep';
+import ContactStep from './booking/steps/ContactStep';
+import ConfirmationStep from './booking/steps/ConfirmationStep';
 import { calculateTotalCost } from '../config/pricingConfig';
 
 const BookingForm = () => {
@@ -12,17 +15,23 @@ const BookingForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingComplete, setBookingComplete] = useState(false);
   
-  // Service details state
+  // Service Type state (Step 1)
   const [serviceType, setServiceType] = useState('regular');
-  const [bookingDate, setBookingDate] = useState('');
-  const [bookingTime, setBookingTime] = useState('');
-  const [duration, setDuration] = useState(2);
-  const [address, setAddress] = useState('');
-  const [instructions, setInstructions] = useState('');
+  
+  // Property Details state (Step 2)
   const [propertyType, setPropertyType] = useState('house');
   const [numRooms, setNumRooms] = useState(2);
   
-  // Contact info state
+  // Schedule state (Step 3)
+  const [bookingDate, setBookingDate] = useState('');
+  const [bookingTime, setBookingTime] = useState('');
+  const [duration, setDuration] = useState(2);
+  
+  // Location state (Step 4)
+  const [address, setAddress] = useState('');
+  const [instructions, setInstructions] = useState('');
+  
+  // Contact info state (Step 5)
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -68,24 +77,40 @@ const BookingForm = () => {
     }
   }, [currentStep]);
 
-  const validateServiceDetails = () => {
+  // Validation functions for each step
+  const validateServiceType = () => {
+    // Service type is pre-selected, so no validation needed
+    return true;
+  };
+  
+  const validatePropertyDetails = () => {
+    // Property type and rooms are pre-selected, so no validation needed
+    return true;
+  };
+  
+  const validateSchedule = () => {
     const newErrors: Record<string, string> = {};
     
     if (!bookingDate) newErrors.bookingDate = 'Booking date is required';
     if (!bookingTime) newErrors.bookingTime = 'Booking time is required';
-    if (!address) newErrors.address = 'Address is required. Please select from the map';
-    
-    // Add other validations as needed
-    if (numRooms <= 0) newErrors.numRooms = 'Number of rooms must be at least 1';
-    if (duration <= 0) newErrors.duration = 'Duration must be at least 1 hour';
     
     setErrors(newErrors);
     setTouched({
       bookingDate: true,
       bookingTime: true,
+    });
+    
+    return Object.keys(newErrors).length === 0;
+  };
+  
+  const validateLocation = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!address) newErrors.address = 'Address is required';
+    
+    setErrors(newErrors);
+    setTouched({
       address: true,
-      numRooms: true,
-      duration: true,
     });
     
     return Object.keys(newErrors).length === 0;
@@ -119,13 +144,35 @@ const BookingForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Step navigation handlers
   const handleNext = () => {
-    if (currentStep === 1) {
-      if (validateServiceDetails()) {
-        setCurrentStep(currentStep + 1);
-      }
-    } else {
+    // Validate current step before proceeding
+    let isValid = false;
+    
+    switch (currentStep) {
+      case 1:
+        isValid = validateServiceType();
+        break;
+      case 2:
+        isValid = validatePropertyDetails();
+        break;
+      case 3:
+        isValid = validateSchedule();
+        break;
+      case 4:
+        isValid = validateLocation();
+        break;
+      case 5:
+        isValid = validateContactInfo();
+        break;
+      default:
+        isValid = true;
+    }
+    
+    if (isValid) {
       setCurrentStep(currentStep + 1);
+      // Clear errors when moving to next step
+      setErrors({});
     }
   };
 
@@ -133,6 +180,10 @@ const BookingForm = () => {
     setCurrentStep(currentStep - 1);
     // Clear errors when going back
     setErrors({});
+  };
+
+  const handleMapAddressSelect = (selectedAddress: string) => {
+    setAddress(selectedAddress);
   };
 
   const handleSubmit = () => {
@@ -145,8 +196,8 @@ const BookingForm = () => {
       // Simulate successful booking
       setBookingComplete(true);
       setTimeout(() => {
-        setCurrentStep(3); // Move to final confirmation step
-      }, 1000);
+        setCurrentStep(6); // Move to final confirmation step
+      }, 500);
     }
   };
 
@@ -168,14 +219,11 @@ const BookingForm = () => {
     // Clear errors and touched state
     setErrors({});
     setTouched({});
+    setBookingComplete(false);
   };
 
   const handleBlur = (field: string) => {
     setTouched({ ...touched, [field]: true });
-  };
-
-  const handleMapAddressSelect = (selectedAddress: string) => {
-    setAddress(selectedAddress);
   };
 
   return (
@@ -184,72 +232,104 @@ const BookingForm = () => {
       <ProgressSteps currentStep={currentStep} />
 
       {/* Form Content */}
-      <div className="bg-white rounded-xl pt-6 transition-all duration-300">
+      <div className="bg-white rounded-xl pb-6 transition-all duration-300">
+        {/* Step 1: Service Type */}
         {currentStep === 1 && (
-          <ServiceDetailsStep
+          <ServiceTypeStep
             serviceType={serviceType}
             setServiceType={setServiceType}
+            onNext={handleNext}
+            totalCost={totalCost}
+          />
+        )}
+
+        {/* Step 2: Property Details */}
+        {currentStep === 2 && (
+          <PropertyStep
             propertyType={propertyType}
             setPropertyType={setPropertyType}
             numRooms={numRooms}
             setNumRooms={setNumRooms}
+            onNext={handleNext}
+            onBack={handleBack}
+            totalCost={totalCost}
+          />
+        )}
+
+        {/* Step 3: Schedule */}
+        {currentStep === 3 && (
+          <ScheduleStep
             bookingDate={bookingDate}
             setBookingDate={setBookingDate}
             bookingTime={bookingTime}
             setBookingTime={setBookingTime}
             duration={duration}
             setDuration={setDuration}
+            onNext={handleNext}
+            onBack={handleBack}
+            totalCost={totalCost}
+            errors={errors}
+            touched={touched}
+            onBlur={handleBlur}
+          />
+        )}
+
+        {/* Step 4: Location */}
+        {currentStep === 4 && (
+          <LocationStep
             address={address}
             setAddress={setAddress}
             onAddressSelect={handleMapAddressSelect}
             instructions={instructions}
             setInstructions={setInstructions}
             onNext={handleNext}
+            onBack={handleBack}
+            totalCost={totalCost}
             errors={errors}
             touched={touched}
             onBlur={handleBlur}
-            totalCost={totalCost}
           />
         )}
 
-        {currentStep === 2 && (
-          <ContactInfoStep
+        {/* Step 5: Contact Information */}
+        {currentStep === 5 && (
+          <ContactStep
             name={name}
             setName={setName}
             email={email}
             setEmail={setEmail}
             phone={phone}
             setPhone={setPhone}
+            onNext={handleSubmit}
             onBack={handleBack}
-            onSubmit={handleSubmit}
-            errors={errors}
-            touched={touched}
-            onBlur={handleBlur}
-            totalCost={totalCost}
-          />
-        )}
-
-        {currentStep === 3 && (
-          <ConfirmationStep
             serviceType={serviceType}
+            propertyType={propertyType}
+            numRooms={numRooms}
             bookingDate={bookingDate}
             bookingTime={bookingTime}
             duration={duration}
+            address={address}
+            totalCost={totalCost}
+            errors={errors}
+            touched={touched}
+            onBlur={handleBlur}
+          />
+        )}
+
+        {/* Step 6: Confirmation */}
+        {currentStep === 6 && bookingComplete && (
+          <ConfirmationStep
+            serviceType={serviceType}
             propertyType={propertyType}
             numRooms={numRooms}
+            bookingDate={bookingDate}
+            bookingTime={bookingTime}
+            duration={duration}
             address={address}
             name={name}
             totalCost={totalCost}
             onReset={handleReset}
           />
-        )}
-
-        {currentStep === 4 && bookingComplete && (
-          <div className="booking-confirmation">
-            <h2>Booking Confirmed!</h2>
-            <p>Thank you for your booking. A confirmation has been sent to your email.</p>
-            <button onClick={handleReset} className="btn-primary">Book Another Service</button>
-          </div>
         )}
       </div>
     </div>

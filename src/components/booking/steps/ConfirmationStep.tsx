@@ -1,5 +1,5 @@
 import React from 'react';
-import { SERVICE_LABELS, PROPERTY_LABELS } from '../../config/pricingConfig';
+import { SERVICE_LABELS, PROPERTY_LABELS } from '../../../config/pricingConfig';
 
 interface ConfirmationStepProps {
   serviceType: string;
