@@ -259,7 +259,7 @@ const BookingForm = () => {
                     value={bookingDate}
                     onChange={(e) => setBookingDate(e.target.value)}
                     required
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 text-gray-900"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -280,7 +280,7 @@ const BookingForm = () => {
                     value={bookingTime}
                     onChange={(e) => setBookingTime(e.target.value)}
                     required
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 text-gray-900"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -326,7 +326,7 @@ const BookingForm = () => {
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Enter your full address"
                   required
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200"
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 text-gray-900"
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -347,7 +347,7 @@ const BookingForm = () => {
                 value={instructions}
                 onChange={(e) => setInstructions(e.target.value)}
                 placeholder="Any specific requests? e.g., focus on kitchen, use specific cleaning products"
-                className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200"
+                className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 text-gray-900"
               />
             </div>
 
@@ -383,7 +383,7 @@ const BookingForm = () => {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Full Name"
                   required
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200"
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 text-gray-900"
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -407,7 +407,7 @@ const BookingForm = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
                     required
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 text-gray-900"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -429,7 +429,7 @@ const BookingForm = () => {
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+971 XX XXX XXXX"
                     required
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 text-gray-900"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -482,27 +482,27 @@ const BookingForm = () => {
               <h3 className="font-bold text-gray-900 text-left mb-4">Booking Summary</h3>
               <div className="grid grid-cols-2 gap-y-2 text-sm">
                 <div className="text-gray-700 font-medium text-left">Service:</div>
-                <div className="text-right font-semibold">
+                <div className="text-right font-semibold text-gray-900">
                   {serviceType === 'regular' ? 'Regular Cleaning' : 
                    serviceType === 'deep' ? 'Deep Cleaning' : 'Move-in/out Cleaning'}
                 </div>
                 
                 <div className="text-gray-700 font-medium text-left">Property:</div>
-                <div className="text-right font-semibold">
+                <div className="text-right font-semibold text-gray-900">
                   {propertyType === 'house' ? 'House' : 'Flat/Apartment'}, {numRooms === 6 ? '6+' : numRooms} rooms
                 </div>
                 
                 <div className="text-gray-700 font-medium text-left">Date:</div>
-                <div className="text-right font-semibold">{bookingDate}</div>
+                <div className="text-right font-semibold text-gray-900">{bookingDate}</div>
                 
                 <div className="text-gray-700 font-medium text-left">Time:</div>
-                <div className="text-right font-semibold">{bookingTime}</div>
+                <div className="text-right font-semibold text-gray-900">{bookingTime}</div>
                 
                 <div className="text-gray-700 font-medium text-left">Duration:</div>
-                <div className="text-right font-semibold">{duration} hours</div>
+                <div className="text-right font-semibold text-gray-900">{duration} hours</div>
                 
                 <div className="text-gray-700 font-medium text-left">Name:</div>
-                <div className="text-right font-semibold">{name}</div>
+                <div className="text-right font-semibold text-gray-900">{name}</div>
               </div>
             </div>
             
