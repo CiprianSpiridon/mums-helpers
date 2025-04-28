@@ -31,9 +31,6 @@ const Header = () => {
           <Link href="/my-bookings" className="text-gray-700 hover:text-pink-600 transition-colors font-medium">
             My Bookings
           </Link>
-          <Link href="#services" className="text-gray-700 hover:text-pink-600 transition-colors font-medium">
-            Services
-          </Link>
         </nav>
         
         <div className="flex items-center space-x-4">
@@ -89,13 +86,6 @@ const Header = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               My Bookings
-            </Link>
-            <Link 
-              href="#services" 
-              className="text-gray-700 hover:text-pink-600 transition-colors font-medium block py-2 px-4 hover:bg-pink-50 rounded-lg"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Services
             </Link>
             <button className="bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-lg transition-colors text-sm font-medium mx-4 my-2">
               Login / Register
