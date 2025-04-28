@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ServiceIcons, PropertyIcons, FormIcons } from './BookingIcons';
+import AddressMapSelector from './AddressMapSelector';
+import PriceBreakdownModal from './PriceBreakdownModal';
 
 interface ServiceDetailsStepProps {
   serviceType: string;
@@ -16,9 +18,14 @@ interface ServiceDetailsStepProps {
   setDuration: (duration: number) => void;
   address: string;
   setAddress: (address: string) => void;
+  onAddressSelect: (address: string) => void;
   instructions: string;
   setInstructions: (instructions: string) => void;
   onNext: () => void;
+  errors?: Record<string, string>;
+  touched?: Record<string, boolean>;
+  onBlur?: (field: string) => void;
+  totalCost?: number;
 }
 
 const ServiceDetailsStep: React.FC<ServiceDetailsStepProps> = ({
@@ -36,13 +43,45 @@ const ServiceDetailsStep: React.FC<ServiceDetailsStepProps> = ({
   setDuration,
   address,
   setAddress,
+  onAddressSelect,
   instructions,
   setInstructions,
   onNext,
+  errors = {},
+  touched = {},
+  onBlur = () => {},
+  totalCost = 0,
 }) => {
+  const [showPriceBreakdown, setShowPriceBreakdown] = useState(false);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24 md:pb-0">
       <h2 className="text-xl font-bold text-gray-900 mb-4">Service Details</h2>
+
+      {/* Price Display - Only visible on desktop */}
+      <div 
+        className="bg-pink-50 p-4 rounded-lg border border-pink-200 mb-6 cursor-pointer hover:bg-pink-100 transition-colors md:block hidden"
+        onClick={() => setShowPriceBreakdown(true)}
+      >
+        <div className="flex justify-between items-center">
+          <div>
+            <h3 className="font-medium text-gray-900">Estimated Cost</h3>
+            <p className="text-xs text-gray-600">Click for price breakdown</p>
+          </div>
+          <div className="text-2xl font-bold text-pink-600">AED {totalCost}</div>
+        </div>
+      </div>
+
+      {/* Price Breakdown Modal */}
+      <PriceBreakdownModal 
+        isOpen={showPriceBreakdown}
+        onClose={() => setShowPriceBreakdown(false)}
+        serviceType={serviceType}
+        propertyType={propertyType}
+        numRooms={numRooms}
+        duration={duration}
+        totalCost={totalCost}
+      />
 
       {/* Service Type Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -168,39 +207,55 @@ const ServiceDetailsStep: React.FC<ServiceDetailsStepProps> = ({
         {/* Date */}
         <div>
           <label className="block text-sm font-semibold text-gray-800 mb-1">
-            Date
+            Date <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
               type="date"
               value={bookingDate}
               onChange={(e) => setBookingDate(e.target.value)}
+              onBlur={() => onBlur('bookingDate')}
               required
-              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 text-gray-900"
+              className={`block w-full pl-10 pr-3 py-3 border ${
+                touched.bookingDate && errors.bookingDate 
+                  ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                  : 'border-gray-300 focus:ring-pink-500 focus:border-pink-500'
+              } rounded-lg transition-all duration-200 text-gray-900`}
             />
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               {FormIcons.date}
             </div>
           </div>
+          {touched.bookingDate && errors.bookingDate && (
+            <p className="mt-1 text-sm text-red-600">{errors.bookingDate}</p>
+          )}
         </div>
         
         {/* Time */}
         <div>
           <label className="block text-sm font-semibold text-gray-800 mb-1">
-            Time
+            Time <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
               type="time"
               value={bookingTime}
               onChange={(e) => setBookingTime(e.target.value)}
+              onBlur={() => onBlur('bookingTime')}
               required
-              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 text-gray-900"
+              className={`block w-full pl-10 pr-3 py-3 border ${
+                touched.bookingTime && errors.bookingTime 
+                  ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                  : 'border-gray-300 focus:ring-pink-500 focus:border-pink-500'
+              } rounded-lg transition-all duration-200 text-gray-900`}
             />
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               {FormIcons.time}
             </div>
           </div>
+          {touched.bookingTime && errors.bookingTime && (
+            <p className="mt-1 text-sm text-red-600">{errors.bookingTime}</p>
+          )}
         </div>
       </div>
 
@@ -227,25 +282,15 @@ const ServiceDetailsStep: React.FC<ServiceDetailsStepProps> = ({
         </div>
       </div>
 
-      {/* Address */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-800 mb-1">
-          Address
-        </label>
-        <div className="relative">
-          <input
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="Enter your full address"
-            required
-            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-200 text-gray-900"
-          />
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            {FormIcons.address}
-          </div>
-        </div>
-      </div>
+      {/* Address Map Selector */}
+      <AddressMapSelector 
+        address={address}
+        setAddress={setAddress}
+        onAddressSelect={onAddressSelect}
+        error={errors.address}
+        touched={touched.address}
+        onBlur={() => onBlur('address')}
+      />
 
       {/* Special Instructions */}
       <div>
@@ -261,14 +306,34 @@ const ServiceDetailsStep: React.FC<ServiceDetailsStepProps> = ({
         />
       </div>
 
-      {/* Next Button */}
-      <div className="flex justify-end mt-8">
+      {/* Next Button - Only visible on desktop */}
+      <div className="flex justify-end mt-8 md:block hidden">
         <button
           type="button"
           onClick={onNext}
           className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
         >
           Continue to Contact Info
+          {FormIcons.arrowRight}
+        </button>
+      </div>
+
+      {/* Floating Price and Next Button for Mobile */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 md:hidden flex justify-between items-center z-50">
+        <div 
+          className="flex flex-col justify-center cursor-pointer"
+          onClick={() => setShowPriceBreakdown(true)}
+        >
+          <span className="text-sm text-gray-600">Total Cost</span>
+          <span className="text-xl font-bold text-pink-600">AED {totalCost}</span>
+        </div>
+        
+        <button
+          type="button"
+          onClick={onNext}
+          className="inline-flex items-center px-5 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
+        >
+          Continue
           {FormIcons.arrowRight}
         </button>
       </div>
