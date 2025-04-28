@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 // Service option icons
 const ServiceIcons = {
@@ -53,18 +53,42 @@ const BookingForm = () => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
 
+  // Add useEffect to handle scrolling when step changes
+  useEffect(() => {
+    // Only run after initial render
+    if (currentStep > 1) {
+      // Timeout to ensure DOM has updated
+      setTimeout(() => {
+        // Try multiple scroll approaches for better cross-browser compatibility
+        try {
+          // For most browsers
+          window.scrollTo(0, 0);
+          
+          // Fallback for iOS Safari
+          document.body.scrollTop = 0;
+          
+          // Fallback for older browsers
+          document.documentElement.scrollTop = 0;
+          
+          // Focus the form container for accessibility
+          if (formRef.current) {
+            formRef.current.focus();
+          }
+        } catch (e) {
+          console.error('Error scrolling:', e);
+        }
+      }, 100);
+    }
+  }, [currentStep]);
+
   const handleNext = () => {
     setCurrentStep(currentStep + 1);
-    // Scroll to the top of the form
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    // Also focus the form element for accessibility
-    if (formRef.current) {
-      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    // Scrolling is now handled by the useEffect
   };
 
   const handleBack = () => {
     setCurrentStep(currentStep - 1);
+    // Scrolling is now handled by the useEffect
   };
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -86,16 +110,11 @@ const BookingForm = () => {
     
     // Move to confirmation step
     setCurrentStep(3);
-    
-    // Scroll to the top of the form
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (formRef.current) {
-      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    // Scrolling is now handled by the useEffect
   };
 
   return (
-    <div className="w-full" ref={formRef}>
+    <div className="w-full" ref={formRef} tabIndex={-1}>
       {/* Progress Steps */}
       <div className="flex items-center justify-between mb-8">
         {[1, 2, 3].map((step) => (
