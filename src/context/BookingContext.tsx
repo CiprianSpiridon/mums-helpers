@@ -61,7 +61,8 @@ const bookingReducer = (state: BookingState, action: BookingAction): BookingStat
   switch (action.type) {
     case 'SET_FIELD':
       // Use simple version with `as any` to bypass linter issue
-      return { ...state, [action.field]: action.value as any }; 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return { ...state, [action.field]: action.value as any };
     case 'SET_LOCATION':
       return {
         ...state,

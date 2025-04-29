@@ -27,7 +27,7 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
   totalCost,
   isSubmitting = false,
 }) => {
-  const { t, currentLanguage, isRtl } = useTranslation();
+  const { t, isRtl } = useTranslation();
 
   // Determine final button labels based on step and translations
   const defaultNext = t('navigation.next');

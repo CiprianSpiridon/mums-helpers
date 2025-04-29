@@ -1,10 +1,12 @@
-'use client'; // Make layout a client component to access context
+// Remove 'use client'
 
-// Remove unused Metadata import
-// import type { Metadata } from "next"; 
+import type { Metadata } from "next"; // Restore Metadata import
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { LanguageProvider, useLanguageContext } from '@/context/LanguageContext';
+// Keep LanguageProvider import, remove hook import
+import { LanguageProvider } from '@/context/LanguageContext';
+// Import the new client wrapper
+import ClientLayoutWrapper from '@/components/ClientLayoutWrapper'; 
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,41 +18,37 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Metadata might need adjustment or alternative handling in client components
-// export const metadata: Metadata = { ... }; 
-// Consider setting title dynamically within the component if needed
+// Restore metadata export
+export const metadata: Metadata = { 
+  title: "MumzHelpers - Maid Booking Services",
+  description: "Book professional cleaning and maid services with MumzHelpers",
+};
 
-// Inner component to access context after provider
+// Remove LayoutContent inner component
+/*
 function LayoutContent({ children }: { children: React.ReactNode }) {
-  const { state } = useLanguageContext();
-  const currentLang = state.language;
-
-  return (
-    <html lang={currentLang} dir={currentLang === 'ar' ? 'rtl' : 'ltr'}>
-      <head>
-        {/* Metadata can be managed via next/head in client components */}
-        <title>MumzHelpers - Maid Booking Services</title>
-        <meta name="description" content="Book professional cleaning and maid services with MumzHelpers" />
-        {/* Add other head elements like favicons here */}
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-          {children}
-      </body>
-    </html>
-  );
+  // ... (logic removed)
 }
+*/
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Default lang/dir, client wrapper will update
   return (
-    // LanguageProvider wraps the content that needs language state
-    <LanguageProvider>
-      <LayoutContent>{children}</LayoutContent>
-    </LanguageProvider>
+    <html lang="en" dir="ltr">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <LanguageProvider>
+          {/* Use ClientLayoutWrapper */}
+          <ClientLayoutWrapper>
+            {children}
+          </ClientLayoutWrapper>
+        </LanguageProvider>
+      </body>
+    </html>
   );
 }
