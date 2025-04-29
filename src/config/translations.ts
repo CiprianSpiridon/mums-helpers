@@ -35,6 +35,8 @@ export type Translations = {
       flatDesc: string;
       roomsLabel: string;
       roomsHelpText: string;
+      cleaningSuppliesLabel: string;
+      cleaningSuppliesDesc: string;
     };
     scheduleStep: {
       title: string;
@@ -173,6 +175,8 @@ export const translations: Translations = {
       flatDesc: 'Apartment or flat in a building',
       roomsLabel: 'How many bedrooms do you have?',
       roomsHelpText: 'This helps us calculate the time needed for your service',
+      cleaningSuppliesLabel: 'Do you need cleaning supplies?',
+      cleaningSuppliesDesc: 'Our cleaner will bring all necessary cleaning products and equipment (additional fee)',
     },
     scheduleStep: {
       title: 'Schedule Your Cleaning',
@@ -304,6 +308,8 @@ export const translations: Translations = {
       flatDesc: 'شقة في مبنى',
       roomsLabel: 'كم عدد غرف النوم لديك؟',
       roomsHelpText: 'يساعدنا هذا في حساب الوقت اللازم لخدمتك',
+      cleaningSuppliesLabel: 'هل تحتاج إلى مواد تنظيف؟',
+      cleaningSuppliesDesc: 'سيحضر المنظف جميع منتجات ومعدات التنظيف اللازمة (رسوم إضافية)',
     },
     scheduleStep: {
       title: 'حدد موعد التنظيف الخاص بك',

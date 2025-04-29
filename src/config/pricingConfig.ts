@@ -27,6 +27,9 @@ const DURATION_COSTS = {
   move: 90,    // AED per additional hour
 };
 
+// Cleaning supplies fee
+const CLEANING_SUPPLIES_FEE = 60; // AED for cleaning supplies
+
 /**
  * Calculate the total cost based on selected options
  * 
@@ -34,13 +37,15 @@ const DURATION_COSTS = {
  * @param propertyType - Type of property (house or flat)
  * @param numRooms - Number of rooms
  * @param duration - Duration in hours
+ * @param needsCleaningSupplies - Whether cleaning supplies are needed
  * @returns The total cost in AED
  */
 export const calculateTotalCost = (
   serviceType: string,
   propertyType: string,
   numRooms: number,
-  duration: number
+  duration: number,
+  needsCleaningSupplies: boolean = false
 ): number => {
   // Start with base price
   let totalCost = BASE_PRICES[serviceType as keyof typeof BASE_PRICES] || BASE_PRICES.regular;
@@ -56,9 +61,17 @@ export const calculateTotalCost = (
   const additionalHours = Math.max(0, duration - 2);
   totalCost += additionalHours * (DURATION_COSTS[serviceType as keyof typeof DURATION_COSTS] || DURATION_COSTS.regular);
   
+  // Add cleaning supplies fee if needed
+  if (needsCleaningSupplies) {
+    totalCost += CLEANING_SUPPLIES_FEE;
+  }
+  
   // Round to nearest integer
   return Math.round(totalCost);
 };
+
+// Export constants for use in other files
+export { CLEANING_SUPPLIES_FEE };
 
 // Remove original label exports
 /*

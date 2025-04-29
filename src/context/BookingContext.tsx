@@ -18,6 +18,7 @@ interface BookingState {
   phone: string;
   latitude?: number;
   longitude?: number;
+  needsCleaningSupplies: boolean;
   totalCost: number;
   errors: Record<string, string>;
   touched: Record<string, boolean>;
@@ -51,6 +52,7 @@ const initialState: BookingState = {
   phone: '',
   latitude: undefined,
   longitude: undefined,
+  needsCleaningSupplies: false,
   totalCost: 0,
   errors: {},
   touched: {},
@@ -116,9 +118,15 @@ export const BookingProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   // Recalculate cost when relevant fields change
   useEffect(() => {
-    const cost = calculateTotalCost(state.serviceType, state.propertyType, state.numRooms, state.duration);
+    const cost = calculateTotalCost(
+      state.serviceType, 
+      state.propertyType, 
+      state.numRooms, 
+      state.duration,
+      state.needsCleaningSupplies
+    );
     dispatch({ type: 'SET_COST', cost });
-  }, [state.serviceType, state.propertyType, state.numRooms, state.duration]);
+  }, [state.serviceType, state.propertyType, state.numRooms, state.duration, state.needsCleaningSupplies]);
 
   return (
     <BookingContext.Provider value={{ state, dispatch }}>

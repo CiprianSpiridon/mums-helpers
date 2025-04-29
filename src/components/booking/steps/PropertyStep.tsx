@@ -6,6 +6,7 @@ import { useBookingContext } from '@/context/BookingContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import StepNavigation from '../StepNavigation';
 import DesktopPriceDisplay from '../DesktopPriceDisplay';
+import { CLEANING_SUPPLIES_FEE } from '@/config/pricingConfig';
 
 interface PropertyStepProps {
   onNext: () => void;
@@ -15,7 +16,7 @@ interface PropertyStepProps {
 
 const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }) => {
   const { state, dispatch } = useBookingContext();
-  const { propertyType, numRooms } = state;
+  const { propertyType, numRooms, needsCleaningSupplies } = state;
   const { t, isRtl } = useTranslation();
 
   const handlePropertyTypeChange = (type: string) => {
@@ -25,6 +26,14 @@ const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }
   const handleNumRoomsChange = (value: number) => {
     const rooms = Math.max(0, value);
     dispatch({ type: 'SET_FIELD', field: 'numRooms', value: rooms });
+  };
+  
+  const handleCleaningSuppliesChange = () => {
+    dispatch({ 
+      type: 'SET_FIELD', 
+      field: 'needsCleaningSupplies', 
+      value: !needsCleaningSupplies 
+    });
   };
 
   return (
@@ -95,6 +104,31 @@ const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }
         <p className="text-xs text-gray-500">
           {t('propertyStep.roomsHelpText')}
         </p>
+      </div>
+      
+      <div>
+        <div className="flex items-start mt-6">
+          <div className="flex items-center h-5">
+            <input
+              id="cleaning-supplies"
+              type="checkbox"
+              checked={needsCleaningSupplies}
+              onChange={handleCleaningSuppliesChange}
+              className="w-5 h-5 text-pink-500 border-gray-300 rounded focus:ring-pink-500"
+            />
+          </div>
+          <div className="ml-3 text-sm">
+            <label htmlFor="cleaning-supplies" className="font-semibold text-gray-800">
+              {t('propertyStep.cleaningSuppliesLabel')}
+              <span className="ml-2 text-sm font-semibold text-pink-500">
+                (+{CLEANING_SUPPLIES_FEE} {t('aed')})
+              </span>
+            </label>
+            <p className="text-gray-600 mt-1">
+              {t('propertyStep.cleaningSuppliesDesc')}
+            </p>
+          </div>
+        </div>
       </div>
       
       <DesktopPriceDisplay totalCost={totalCost} />
