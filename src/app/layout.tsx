@@ -22,6 +22,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = { 
   title: "MumzHelpers - Maid Booking Services",
   description: "Book professional cleaning and maid services with MumzHelpers",
+  viewport: {
+    width: 'device-width',
+    initialScale: 1.0,
+    maximumScale: 1.0,
+    userScalable: false,
+  },
 };
 
 // Remove LayoutContent inner component

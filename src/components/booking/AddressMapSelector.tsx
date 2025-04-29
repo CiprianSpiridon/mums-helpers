@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FormIcons } from './BookingIcons';
-import GoogleMapComponent from './GoogleMapComponent';
+import GoogleMapComponent from '@/components/booking/GoogleMapComponent';
 import { useTranslation } from '@/hooks/useTranslation';
 
 // Move sampleAddresses outside the component
@@ -20,6 +20,8 @@ interface AddressMapSelectorProps {
   error?: string;
   touched?: boolean;
   onBlur?: () => void;
+  latitude?: number;
+  longitude?: number;
 }
 
 const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
@@ -29,6 +31,8 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
   error,
   touched,
   onBlur = () => {},
+  latitude,
+  longitude
 }) => {
   const { t } = useTranslation();
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -46,22 +50,28 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
     }
   }, [address]); // Remove sampleAddresses from deps
   
-  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAddressChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.target.value);
     setShowSuggestions(true);
-  };
+  }, [setAddress]);
   
-  const handleSelectAddress = (selectedAddress: string) => {
+  const handleSelectAddress = useCallback((selectedAddress: string) => {
     setAddress(selectedAddress);
     onAddressSelect(selectedAddress, undefined, undefined);
     setShowSuggestions(false);
-  };
+  }, [setAddress, onAddressSelect]);
 
-  const handleMapLocationSelected = (selectedAddress: string, lat?: number, lng?: number) => {
+  const handleMapLocationSelected = useCallback((selectedAddress: string, lat?: number, lng?: number) => {
     setAddress(selectedAddress);
     onAddressSelect(selectedAddress, lat, lng);
     setShowSuggestions(false);
-  };
+  }, [setAddress, onAddressSelect]);
+  
+  const handleInputBlur = useCallback(() => {
+    onBlur();
+    // Don't hide suggestions immediately to allow for selection
+    setTimeout(() => setShowSuggestions(false), 200);
+  }, [onBlur]);
   
   // You should create these environment variables in your .env.local file:
   // NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
@@ -71,15 +81,15 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
   
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-semibold text-gray-800 mb-1">
-        {t('locationStep.addressLabel')} <span className="text-red-500">*</span>
-      </label>
+      {/* Removed duplicate label - parent component already has this label */}
       
       {/* Google Maps Component */}
       <GoogleMapComponent 
         onSelectLocation={handleMapLocationSelected}
         apiKey={apiKey}
         mapId={mapId}
+        initialLat={latitude}
+        initialLng={longitude}
       />
       
       {apiKey === '' && (
@@ -99,11 +109,7 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
           type="text"
           value={address}
           onChange={handleAddressChange}
-          onBlur={() => {
-            onBlur();
-            // Don't hide suggestions immediately to allow for selection
-            setTimeout(() => setShowSuggestions(false), 200);
-          }}
+          onBlur={handleInputBlur}
           onFocus={() => setShowSuggestions(true)}
           placeholder={t('locationStep.mapPlaceholder')}
           required
