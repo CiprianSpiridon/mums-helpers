@@ -6,6 +6,8 @@ interface GoogleMapComponentProps {
   onSelectLocation: (address: string, lat?: number, lng?: number) => void;
   apiKey?: string;
   mapId?: string;
+  initialLat?: number;
+  initialLng?: number;
 }
 
 // Define types for Google Maps API
@@ -96,11 +98,29 @@ interface LatLngLiteral {
 const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({ 
   onSelectLocation,
   apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
-  mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_ID || ''
+  mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_ID || '',
+  initialLat,
+  initialLng
 }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastUpdateRef = useRef<{lat: number, lng: number} | null>(null);
+  const mapInstanceRef = useRef<GoogleMap | null>(null);
+  const hasSavedLocation = initialLat !== undefined && initialLng !== undefined;
+  const initialLoadRef = useRef(true);
+
+  // Function to debounce address updates to prevent excessive geocoding requests
+  const debouncedAddressUpdate = useCallback((updateFn: () => void, delay: number = 500) => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    debounceTimerRef.current = setTimeout(() => {
+      updateFn();
+      debounceTimerRef.current = null;
+    }, delay);
+  }, []);
 
   const initMap = useCallback(() => {
     if (!mapRef.current) {
@@ -120,6 +140,7 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
       // Check if already initialized (e.g., due to StrictMode double invoke)
       if (mapRef.current.querySelector('canvas')) { // Simple check if map canvas exists
            console.log('Map already initialized in this element.');
+           setMapLoaded(true); // Ensure we set mapLoaded to true even for already initialized maps
            return;
       }
 
@@ -127,9 +148,12 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
       googleWindow._mapsLoaded = true;
       googleWindow._mapsLoading = false;
       
-      const defaultLocation: LatLngLiteral = { lat: 25.1930452, lng: 55.3055855 };
+      // Use saved location from context if available, otherwise use default
+      const defaultLocation: LatLngLiteral = hasSavedLocation 
+        ? { lat: initialLat!, lng: initialLng! }
+        : { lat: 25.1930452, lng: 55.3055855 };
       
-      console.log('Creating map instance...');
+      console.log('Creating map instance with location:', defaultLocation);
       const mapOptions: MapOptions = {
         zoom: 12,
         center: defaultLocation,
@@ -140,6 +164,7 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
         mapId: mapId // Pass mapId here from props
       };
       const map = new googleWindow.google.maps.Map(mapRef.current, mapOptions);
+      mapInstanceRef.current = map;
       
       const geocoderInstance = new googleWindow.google.maps.Geocoder();
       
@@ -158,6 +183,20 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
             console.error('Invalid location object:', location);
             return; 
           }
+          
+          // Check if we've already updated this location recently (within small threshold)
+          if (!initialLoadRef.current && lastUpdateRef.current && 
+              Math.abs(lastUpdateRef.current.lat - lat) < 0.0001 && 
+              Math.abs(lastUpdateRef.current.lng - lng) < 0.0001) {
+            console.log('Skipping duplicate location update');
+            return;
+          }
+          
+          // Reset the initial load flag
+          initialLoadRef.current = false;
+          
+          lastUpdateRef.current = { lat, lng };
+          
           console.log('Getting address for location:', lat, lng);
           const locationLiteral: LatLngLiteral = { lat, lng };
           geocoderInstance.geocode({ location: locationLiteral }, (results, status) => {
@@ -172,12 +211,42 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
           });
       };
       
+      // Initial address update without debouncing
       updateAddressFromLocation(defaultLocation);
       
-      map.addListener('idle', () => {
+      // Handle map drag end
+      map.addListener('dragend', () => {
+        // Always geocode the current center for UI display
         const center = map.getCenter();
         if (center) {
-          updateAddressFromLocation(center);
+          console.log('Map drag ended, updating address from current center');
+          debouncedAddressUpdate(() => {
+            updateAddressFromLocation(center);
+          }, 300);
+        }
+      });
+      
+      // Handle map zoom change
+      map.addListener('zoom_changed', () => {
+        // Always geocode the current center for UI display
+        const center = map.getCenter();
+        if (center) {
+          console.log('Zoom changed, updating address from current center');
+          debouncedAddressUpdate(() => {
+            updateAddressFromLocation(center);
+          }, 300);
+        }
+      });
+      
+      // Use limited idle event for better UX - longer debounce
+      map.addListener('idle', () => {
+        // Always geocode the current center for UI display
+        const center = map.getCenter();
+        if (center) {
+          console.log('Map idle, updating address from current center');
+          debouncedAddressUpdate(() => {
+            updateAddressFromLocation(center);
+          }, 800); // Longer delay on idle events to prevent shimmering
         }
       });
       
@@ -188,7 +257,7 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
       setLoadError('Failed to initialize Google Maps');
       setMapLoaded(false);
     }
-  }, [mapId, onSelectLocation]); 
+  }, [mapId, onSelectLocation, debouncedAddressUpdate, initialLat, initialLng, hasSavedLocation]); 
 
   // Load Google Maps script effect
   useEffect(() => {
@@ -244,19 +313,20 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
       return script;
     };
     
-    const script = loadGoogleMaps();
+    loadGoogleMaps();
     
     return () => {
-      // Clean up
-      if (script && script.id === 'google-maps-script' && !googleWindow._mapsLoaded) {
-        script.onerror = null;
-        googleWindow.initMap = () => { 
-          console.log('Prevented stale initMap callback'); 
-        };
-        googleWindow._mapsLoading = false;
+      // Clean up debounce timer when component unmounts
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
+      
+      // Don't remove the script - this causes problems with hot reloading
+      // Instead just clean up callbacks
+      googleWindow.initMap = () => { 
+        console.log('Prevented stale initMap callback'); 
+      };
     };
-  // Add initMap to dependency array
   }, [apiKey, mapId, initMap]); 
 
   return (

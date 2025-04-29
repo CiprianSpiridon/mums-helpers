@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 // import { FormIcons } from '../BookingIcons';
 import AddressMapSelector from '../AddressMapSelector';
 import { useBookingContext } from '@/context/BookingContext';
@@ -28,16 +28,20 @@ const LocationStep: React.FC<LocationStepProps> = ({
   onBlur,
 }) => {
   const { state, dispatch } = useBookingContext();
-  const { address, instructions } = state;
+  const { address, instructions, latitude, longitude } = state;
   const { t } = useTranslation();
 
-  const handleAddressChange = (value: string) => {
+  const handleAddressChange = useCallback((value: string) => {
     dispatch({ type: 'SET_FIELD', field: 'address', value });
-  };
+  }, [dispatch]);
 
-  const handleInstructionsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInstructionsChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     dispatch({ type: 'SET_FIELD', field: 'instructions', value: e.target.value });
-  };
+  }, [dispatch]);
+
+  const handleBlur = useCallback((field: string) => {
+    onBlur(field);
+  }, [onBlur]);
 
   return (
     <div className="space-y-8 pb-24 md:pb-0">
@@ -55,11 +59,10 @@ const LocationStep: React.FC<LocationStepProps> = ({
           onAddressSelect={onAddressSelect}
           error={touched.address && errors.address ? t('requiredField') : undefined}
           touched={touched.address}
-          onBlur={() => onBlur('address')}
+          onBlur={() => handleBlur('address')}
+          latitude={latitude}
+          longitude={longitude}
         />
-         <p className="text-xs text-gray-500 mt-1">
-           {t('locationStep.mapHelpText')}
-         </p>
       </div>
       
       <div>
