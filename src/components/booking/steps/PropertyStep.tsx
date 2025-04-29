@@ -3,7 +3,9 @@
 import React from 'react';
 import { PropertyIcons } from '../BookingIcons';
 import { useBookingContext } from '@/context/BookingContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import StepNavigation from '../StepNavigation';
+import DesktopPriceDisplay from '../DesktopPriceDisplay';
 
 interface PropertyStepProps {
   onNext: () => void;
@@ -14,6 +16,7 @@ interface PropertyStepProps {
 const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }) => {
   const { state, dispatch } = useBookingContext();
   const { propertyType, numRooms } = state;
+  const { t } = useTranslation();
 
   const handlePropertyTypeChange = (type: string) => {
     dispatch({ type: 'SET_FIELD', field: 'propertyType', value: type });
@@ -26,12 +29,12 @@ const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }
 
   return (
     <div className="space-y-8 pb-24 md:pb-0">
-      <h2 className="text-xl font-bold text-gray-900 mb-2">Property Details</h2>
-      <p className="text-gray-600 mb-6">Tell us about your property to customize your service.</p>
+      <h2 className="text-xl font-bold text-gray-900 mb-2">{t('propertyStep.title')}</h2>
+      <p className="text-gray-600 mb-6">{t('propertyStep.subtitle')}</p>
       
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-3">
-          Property Type
+          {t('propertyStep.propertyTypeLabel')}
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           <div 
@@ -46,9 +49,9 @@ const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }
               <div className={`p-2 rounded-full mr-2 ${propertyType === 'house' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
                 {PropertyIcons.house}
               </div>
-              <h3 className="font-semibold text-gray-900">House</h3>
+              <h3 className="font-semibold text-gray-900">{t('propertyStep.house')}</h3>
             </div>
-            <p className="text-sm text-gray-700">Villa, townhouse or independent home</p>
+            <p className="text-sm text-gray-700">{t('propertyStep.houseDesc')}</p>
           </div>
           <div 
             onClick={() => handlePropertyTypeChange('flat')}
@@ -62,16 +65,16 @@ const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }
               <div className={`p-2 rounded-full mr-2 ${propertyType === 'flat' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
                 {PropertyIcons.flat}
               </div>
-              <h3 className="font-semibold text-gray-900">Flat/Apartment</h3>
+              <h3 className="font-semibold text-gray-900">{t('propertyStep.flat')}</h3>
             </div>
-            <p className="text-sm text-gray-700">Apartment or flat in a building</p>
+            <p className="text-sm text-gray-700">{t('propertyStep.flatDesc')}</p>
           </div>
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-3">
-          How many bedrooms do you have?
+          {t('propertyStep.roomsLabel')}
         </label>
         <div className="flex items-center space-x-1 mb-2">
           {[1, 2, 3, 4, 5, '6+'].map((rooms) => (
@@ -90,20 +93,12 @@ const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }
           ))}
         </div>
         <p className="text-xs text-gray-500">
-          This helps us calculate the time needed for your service
+          {t('propertyStep.roomsHelpText')}
         </p>
       </div>
       
-      <div className="bg-pink-50 p-4 rounded-lg border border-pink-200 mt-8 md:block hidden">
-        <div className="flex justify-between items-center">
-          <div>
-            <h3 className="font-medium text-gray-900">Estimated Cost</h3>
-            <p className="text-xs text-gray-600">Based on your selections</p>
-          </div>
-          <div className="text-xl font-bold text-pink-600">AED {totalCost}</div>
-        </div>
-      </div>
-
+      <DesktopPriceDisplay totalCost={totalCost} />
+      
       <StepNavigation 
         onNext={onNext}
         onBack={onBack}

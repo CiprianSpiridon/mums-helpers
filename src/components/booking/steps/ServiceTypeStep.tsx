@@ -3,7 +3,9 @@
 import React from 'react';
 import { ServiceIcons } from '../BookingIcons';
 import { useBookingContext } from '@/context/BookingContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import StepNavigation from '../StepNavigation';
+import DesktopPriceDisplay from '../DesktopPriceDisplay';
 
 interface ServiceTypeStepProps {
   onNext: () => void;
@@ -13,6 +15,7 @@ interface ServiceTypeStepProps {
 const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) => {
   const { state, dispatch } = useBookingContext();
   const { serviceType } = state;
+  const { t } = useTranslation();
 
   const handleServiceTypeChange = (type: string) => {
     dispatch({ type: 'SET_FIELD', field: 'serviceType', value: type });
@@ -20,7 +23,7 @@ const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) 
 
   return (
     <div className="space-y-6 pb-24 md:pb-0">
-      <h2 className="text-xl font-bold text-gray-900 mb-6">Select Cleaning Service</h2>
+      <h2 className="text-xl font-bold text-gray-900 mb-6">{t('serviceStep.title')}</h2>
       
       <div className="grid grid-cols-1 gap-4 mb-8">
         <div 
@@ -36,14 +39,11 @@ const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) 
               {ServiceIcons.regular} 
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 text-lg">Regular Cleaning</h3>
-              <p className="text-gray-600">From AED 120</p> 
+              <h3 className="font-semibold text-gray-900 text-lg">{t('serviceStep.regularCleaning')}</h3>
+              <p className="text-gray-600">{t('serviceStep.fromPrice', 120)}</p> 
             </div>
           </div>
-          <p className="text-sm text-gray-700 ml-14">
-            Standard cleaning service for maintaining your home. Includes dusting, vacuuming, 
-            mopping, and bathroom cleaning.
-          </p>
+          <p className="text-sm text-gray-700 ml-14">{t('serviceStep.regularDescription')}</p>
         </div>
 
         <div 
@@ -59,14 +59,11 @@ const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) 
               {ServiceIcons.deep}
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 text-lg">Deep Cleaning</h3>
-              <p className="text-gray-600">From AED 200</p>
+              <h3 className="font-semibold text-gray-900 text-lg">{t('serviceStep.deepCleaning')}</h3>
+              <p className="text-gray-600">{t('serviceStep.fromPrice', 200)}</p>
             </div>
           </div>
-          <p className="text-sm text-gray-700 ml-14">
-            Intensive cleaning that covers hard-to-reach areas, cabinets, appliances, 
-            and detailed bathroom sanitation.
-          </p>
+          <p className="text-sm text-gray-700 ml-14">{t('serviceStep.deepDescription')}</p>
         </div>
 
         <div 
@@ -82,26 +79,15 @@ const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) 
               {ServiceIcons.move}
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 text-lg">Move-in/out Cleaning</h3>
-              <p className="text-gray-600">From AED 250</p>
+              <h3 className="font-semibold text-gray-900 text-lg">{t('serviceStep.moveInOutCleaning')}</h3>
+              <p className="text-gray-600">{t('serviceStep.fromPrice', 250)}</p>
             </div>
           </div>
-          <p className="text-sm text-gray-700 ml-14">
-            Complete cleaning service when moving in or out. Includes all deep cleaning tasks
-            plus inside cabinets, appliances, and windows.
-          </p>
+          <p className="text-sm text-gray-700 ml-14">{t('serviceStep.moveDescription')}</p>
         </div>
       </div>
 
-      <div className="bg-pink-50 p-4 rounded-lg border border-pink-200 mt-8 md:block hidden">
-        <div className="flex justify-between items-center">
-          <div>
-            <h3 className="font-medium text-gray-900">Estimated Cost</h3>
-            <p className="text-xs text-gray-600">Based on your selections</p>
-          </div>
-          <div className="text-xl font-bold text-pink-600">AED {totalCost}</div> 
-        </div>
-      </div>
+      <DesktopPriceDisplay totalCost={totalCost} />
 
       <StepNavigation 
         onNext={onNext}

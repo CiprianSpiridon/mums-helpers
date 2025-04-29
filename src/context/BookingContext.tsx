@@ -73,11 +73,8 @@ const bookingReducer = (state: BookingState, action: BookingAction): BookingStat
       return { ...state, errors: action.errors };
     case 'SET_TOUCHED':
       if ('field' in action.touched) {
-        // Update single touched field
-        // Still facing linter issue here, using string cast as workaround
         return { ...state, touched: { ...state.touched, [action.touched.field as string]: action.touched.value }};
       }
-      // Replace entire touched object
       return { ...state, touched: action.touched };
     case 'SET_COST':
       return { ...state, totalCost: action.cost };
@@ -95,7 +92,6 @@ const bookingReducer = (state: BookingState, action: BookingAction): BookingStat
         touched: {} 
       };
     case 'RESET_FORM':
-      // Reset to initial state and recalculate cost
       const initialCost = calculateTotalCost(initialState.serviceType, initialState.propertyType, initialState.numRooms, initialState.duration);
       return { ...initialState, totalCost: initialCost }; 
     default:
