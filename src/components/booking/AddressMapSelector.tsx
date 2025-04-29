@@ -3,6 +3,16 @@ import { FormIcons } from './BookingIcons';
 import GoogleMapComponent from './GoogleMapComponent';
 import { useTranslation } from '@/hooks/useTranslation';
 
+// Move sampleAddresses outside the component
+const sampleAddresses = [
+  'Sheikh Zayed Road, Dubai, UAE',
+  'Downtown Dubai, UAE',
+  'Dubai Marina, UAE',
+  'Palm Jumeirah, Dubai, UAE',
+  'Jumeirah Beach Residence, Dubai, UAE',
+  'Business Bay, Dubai, UAE',
+];
+
 interface AddressMapSelectorProps {
   address: string;
   setAddress: (address: string) => void;
@@ -21,22 +31,10 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
   onBlur = () => {},
 }) => {
   const { t } = useTranslation();
-  // Sample addresses for demo purposes
-  // In a real app, these would come from a map API
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   
-  // Sample addresses - would be replaced with actual geocoding API
-  const sampleAddresses = [
-    'Sheikh Zayed Road, Dubai, UAE',
-    'Downtown Dubai, UAE',
-    'Dubai Marina, UAE',
-    'Palm Jumeirah, Dubai, UAE',
-    'Jumeirah Beach Residence, Dubai, UAE',
-    'Business Bay, Dubai, UAE',
-  ];
-  
-  // Filter suggestions based on input
+  // useEffect no longer needs sampleAddresses in deps if it's defined outside
   useEffect(() => {
     if (address.length > 2) {
       const filtered = sampleAddresses.filter(
@@ -46,7 +44,7 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
     } else {
       setSuggestions([]);
     }
-  }, [address]);
+  }, [address]); // Remove sampleAddresses from deps
   
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.target.value);

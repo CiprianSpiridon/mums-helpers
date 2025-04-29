@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+'use client';
+
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 interface GoogleMapComponentProps {
   onSelectLocation: (address: string, lat?: number, lng?: number) => void;
@@ -99,15 +101,96 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
   const mapRef = useRef<HTMLDivElement>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  // These state variables are used within initMap and event handlers
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [mapInstance, setMapInstance] = useState<GoogleMap | null>(null); // Use local type
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [marker, setMarker] = useState<AdvancedMarkerElement | null>(null); // Use local type
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [geocoder, setGeocoder] = useState<GoogleGeocoder | null>(null); // Use local type
 
-  // Load Google Maps script
+  const initMap = useCallback(() => {
+    if (!mapRef.current) {
+      console.warn('Map reference is not available');
+      return;
+    }
+    
+    try {
+      const googleWindow = window as unknown as GoogleMapWindow;
+      
+      if (!googleWindow.google?.maps) {
+          console.error("Google Maps script not loaded yet.");
+          setLoadError("Google Maps script failed to load or is unavailable.");
+          return;
+      }
+      
+      // Check if already initialized (e.g., due to StrictMode double invoke)
+      if (mapRef.current.querySelector('canvas')) { // Simple check if map canvas exists
+           console.log('Map already initialized in this element.');
+           return;
+      }
+
+      // Set the global loaded flag to prevent duplicate initialization
+      googleWindow._mapsLoaded = true;
+      googleWindow._mapsLoading = false;
+      
+      const defaultLocation: LatLngLiteral = { lat: 25.1930452, lng: 55.3055855 };
+      
+      console.log('Creating map instance...');
+      const mapOptions: MapOptions = {
+        zoom: 12,
+        center: defaultLocation,
+        mapTypeControl: false,
+        fullscreenControl: false,
+        streetViewControl: false,
+        zoomControl: true,
+        mapId: mapId // Pass mapId here from props
+      };
+      const map = new googleWindow.google.maps.Map(mapRef.current, mapOptions);
+      
+      const geocoderInstance = new googleWindow.google.maps.Geocoder();
+      
+      const updateAddressFromLocation = (location: LatLng | LatLngLiteral) => {
+          let lat: number;
+          let lng: number;
+          if ('lat' in location && typeof location.lat === 'function' && 
+              'lng' in location && typeof location.lng === 'function') {
+            lat = location.lat();
+            lng = location.lng();
+          } else if ('lat' in location && typeof location.lat === 'number' && 
+                    'lng' in location && typeof location.lng === 'number') {
+            lat = location.lat;
+            lng = location.lng;
+          } else {
+            console.error('Invalid location object:', location);
+            return; 
+          }
+          console.log('Getting address for location:', lat, lng);
+          const locationLiteral: LatLngLiteral = { lat, lng };
+          geocoderInstance.geocode({ location: locationLiteral }, (results, status) => {
+            console.log('Geocode Status:', status);
+            if (status === 'OK' && results && results[0]) {
+              const address = results[0].formatted_address;
+              console.log('Geocoded Address:', address);
+              onSelectLocation(address, lat, lng); 
+            } else {
+              console.error('Geocode failed:', status);
+            }
+          });
+      };
+      
+      updateAddressFromLocation(defaultLocation);
+      
+      map.addListener('idle', () => {
+        const center = map.getCenter();
+        if (center) {
+          updateAddressFromLocation(center);
+        }
+      });
+      
+      console.log('Map initialization complete');
+      setMapLoaded(true);
+    } catch (error) {
+      console.error('Error initializing map:', error);
+      setLoadError('Failed to initialize Google Maps');
+      setMapLoaded(false);
+    }
+  }, [mapId, onSelectLocation]); 
+
+  // Load Google Maps script effect
   useEffect(() => {
     // Validate API key and map ID
     if (!apiKey) {
@@ -120,7 +203,7 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
     // Check if Maps is already loaded
     if (googleWindow.google?.maps) {
       console.log('Google Maps is already loaded, initializing map...');
-      initMap();
+      initMap(); // Call memoized initMap
       return;
     }
     
@@ -173,106 +256,8 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
         googleWindow._mapsLoading = false;
       }
     };
-  }, [apiKey, mapId]);
-
-  // Initialize map when script loads
-  const initMap = () => {
-    if (!mapRef.current) {
-      console.warn('Map reference is not available');
-      return;
-    }
-    
-    try {
-      const googleWindow = window as unknown as GoogleMapWindow;
-      
-      // Set the global loaded flag to prevent duplicate initialization
-      googleWindow._mapsLoaded = true;
-      googleWindow._mapsLoading = false;
-      
-      // Dubai coordinates - updated to specified location
-      const defaultLocation: LatLngLiteral = { lat: 25.1930452, lng: 55.3055855 };
-      
-      // Create map instance
-      console.log('Creating map instance...');
-      const mapOptions: MapOptions = {
-        zoom: 12,
-        center: defaultLocation,
-        mapTypeControl: false,
-        fullscreenControl: false,
-        streetViewControl: false,
-        zoomControl: true,
-        mapId: mapId
-      };
-      const map = new googleWindow.google.maps.Map(mapRef.current, mapOptions);
-      setMapInstance(map);
-      
-      // Create geocoder
-      const geocoderInstance = new googleWindow.google.maps.Geocoder();
-      setGeocoder(geocoderInstance);
-      
-      // Function to get address from coordinates
-      const updateAddressFromLocation = (location: LatLng | LatLngLiteral) => {
-        // Ensure we have lat/lng values
-        let lat: number;
-        let lng: number;
-        
-        // Check if location is a LatLng object with callable methods
-        if ('lat' in location && typeof location.lat === 'function' && 
-            'lng' in location && typeof location.lng === 'function') {
-          // It's a LatLng object
-          lat = location.lat();
-          lng = location.lng();
-        } else if ('lat' in location && typeof location.lat === 'number' && 
-                  'lng' in location && typeof location.lng === 'number') {
-          // It's a LatLngLiteral object with number properties
-          lat = location.lat;
-          lng = location.lng;
-        } else {
-          console.error('Invalid location object:', location);
-          return; // Exit if we can't extract coordinates
-        }
-        
-        if (lat !== undefined && lng !== undefined) {
-          console.log('Getting address for location:', lat, lng);
-          const locationLiteral: LatLngLiteral = { lat, lng };
-          
-          // Get address from coordinates
-          geocoderInstance.geocode({ location: locationLiteral }, (results, status) => {
-            console.log('Geocode Status:', status);
-            if (status === 'OK' && results && results[0]) {
-              const address = results[0].formatted_address;
-              console.log('Geocoded Address:', address);
-              // Pass lat and lng along with address
-              onSelectLocation(address, lat, lng); 
-            } else {
-              console.error('Geocode failed:', status);
-              // Optionally call onSelectLocation with only address or null coords on failure?
-              // onSelectLocation(address || '', undefined, undefined); // Example
-            }
-          });
-        }
-      };
-      
-      // Get initial address from the default location
-      updateAddressFromLocation(defaultLocation);
-      
-      // Add event listeners for when the map stops moving
-      // This will get the address at the center of the map
-      map.addListener('idle', () => {
-        const center = map.getCenter();
-        if (center) {
-          updateAddressFromLocation(center);
-        }
-      });
-      
-      console.log('Map initialization complete');
-      setMapLoaded(true);
-    } catch (error) {
-      console.error('Error initializing map:', error);
-      setLoadError('Failed to initialize Google Maps');
-      setMapLoaded(false);
-    }
-  };
+  // Add initMap to dependency array
+  }, [apiKey, mapId, initMap]); 
 
   return (
     <div className="h-60 bg-gray-100 rounded-lg overflow-hidden relative">

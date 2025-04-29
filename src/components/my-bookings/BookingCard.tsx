@@ -7,8 +7,10 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { getServiceTranslationKey } from '@/lib/formatters';
 // Remove self-import
 // import type { BookingStatus, Booking, Maid } from './BookingCard'; 
+// Import Next Image component
+import Image from 'next/image'; 
 
-// Define and export types directly
+// Define and Export types directly
 export type BookingStatus = 'scheduled' | 'completed' | 'cancelled' | 'all';
 export interface Maid {
   name: string;
@@ -93,9 +95,16 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, getStatusBadge }) =>
           <div>
             <p className="text-sm font-medium text-gray-500">{t('myBookingsPage.maid')}</p>
             <div className="flex items-center mt-1">
-              <div className={`w-8 h-8 bg-gray-200 rounded-full flex-shrink-0 overflow-hidden ${isRtl ? 'ml-2' : 'mr-2'}`}>
+              <div className={`relative w-8 h-8 bg-gray-200 rounded-full flex-shrink-0 overflow-hidden ${isRtl ? 'ml-2' : 'mr-2'}`}>
                 {booking.maid.image ? (
-                    <img src={booking.maid.image} alt={booking.maid.name} className="w-full h-full object-cover" />
+                    <Image 
+                       src={booking.maid.image} 
+                       alt={booking.maid.name} 
+                       fill
+                       style={{ objectFit: 'cover' }}
+                       sizes="32px"
+                       priority={false}
+                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-500">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
