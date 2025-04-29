@@ -5,7 +5,7 @@ import GoogleMapComponent from './GoogleMapComponent';
 interface AddressMapSelectorProps {
   address: string;
   setAddress: (address: string) => void;
-  onAddressSelect: (address: string) => void;
+  onAddressSelect: (address: string, lat?: number, lng?: number) => void;
   error?: string;
   touched?: boolean;
   onBlur?: () => void;
@@ -53,13 +53,13 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
   
   const handleSelectAddress = (selectedAddress: string) => {
     setAddress(selectedAddress);
-    onAddressSelect(selectedAddress);
+    onAddressSelect(selectedAddress, undefined, undefined);
     setShowSuggestions(false);
   };
 
-  const handleMapLocationSelected = (selectedAddress: string) => {
+  const handleMapLocationSelected = (selectedAddress: string, lat?: number, lng?: number) => {
     setAddress(selectedAddress);
-    onAddressSelect(selectedAddress);
+    onAddressSelect(selectedAddress, lat, lng);
     setShowSuggestions(false);
   };
   
@@ -77,7 +77,7 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
       
       {/* Google Maps Component */}
       <GoogleMapComponent 
-        onSelectLocation={(address) => handleMapLocationSelected(address)}
+        onSelectLocation={handleMapLocationSelected}
         apiKey={apiKey}
         mapId={mapId}
       />

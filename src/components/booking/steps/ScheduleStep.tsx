@@ -1,80 +1,86 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { FormIcons } from '../BookingIcons';
+import { useBookingContext } from '@/context/BookingContext';
+import StepNavigation from '../StepNavigation';
 
+// Add totalCost back to props
 interface ScheduleStepProps {
-  bookingDate: string;
-  setBookingDate: (date: string) => void;
-  bookingTime: string;
-  setBookingTime: (time: string) => void;
-  duration: number;
-  setDuration: (duration: number) => void;
   onNext: () => void;
   onBack: () => void;
   totalCost: number;
-  errors?: Record<string, string>;
-  touched?: Record<string, boolean>;
-  onBlur?: (field: string) => void;
+  errors: Record<string, string>;
+  touched: Record<string, boolean>;
+  onBlur: (field: string) => void;
 }
 
 const ScheduleStep: React.FC<ScheduleStepProps> = ({
-  bookingDate,
-  setBookingDate,
-  bookingTime,
-  setBookingTime,
-  duration,
-  setDuration,
   onNext,
   onBack,
   totalCost,
-  errors = {},
-  touched = {},
-  onBlur = () => {},
+  errors,
+  touched,
+  onBlur,
 }) => {
+  // Get state and dispatch from context
+  const { state, dispatch } = useBookingContext();
+  const { bookingDate, bookingTime, duration } = state; // Destructure needed state
+
+  // Keep local state for time slots if needed for original UI
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
-  
-  // Generate time slots in 30-minute intervals from 8:00 AM to 8:00 PM
+   
+  // Generate time slots - Original logic
   useEffect(() => {
     const slots = [];
     const startHour = 8; // 8 AM
     const endHour = 20; // 8 PM
     
     for (let hour = startHour; hour < endHour; hour++) {
-      // Add full hour slot
       slots.push(`${hour.toString().padStart(2, '0')}:00`);
-      // Add half hour slot
       slots.push(`${hour.toString().padStart(2, '0')}:30`);
     }
-    
     setTimeSlots(slots);
   }, []);
-  
-  // Format date for display
+
+  // Update state using dispatch
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({ type: 'SET_FIELD', field: 'bookingDate', value: e.target.value });
+  };
+
+  const handleTimeChange = (time: string) => {
+    dispatch({ type: 'SET_FIELD', field: 'bookingTime', value: time });
+  };
+
+  const handleDurationChange = (value: number) => {
+    const newDuration = Math.max(2, value);
+    dispatch({ type: 'SET_FIELD', field: 'duration', value: newDuration });
+  };
+
+  // Format date/time for display - Original logic
   const formatDateDisplay = (dateString: string) => {
     if (!dateString) return '';
     const date = new Date(dateString);
+    // Add error handling? For now, assume valid date from input
     return date.toLocaleDateString('en-AE', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
     });
   };
-  
-  // Format time for display
+   
   const formatTimeDisplay = (timeString: string) => {
     if (!timeString) return '';
-    const [hours, minutes] = timeString.split(':');
-    const hour = parseInt(hours, 10);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const hour12 = hour % 12 || 12;
+    const parts = timeString.split(':');
+    if (parts.length !== 2) return timeString; // Basic fallback
+    const hours = parseInt(parts[0], 10);
+    const minutes = parts[1];
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const hour12 = hours % 12 || 12;
     return `${hour12}:${minutes} ${ampm}`;
   };
-  
-  // Get min date (today)
+   
+  // Get min/max date - Original logic
   const today = new Date();
   const minDate = today.toISOString().split('T')[0];
-  
-  // Calculate max date (3 months from now)
   const maxDate = new Date(today);
   maxDate.setMonth(today.getMonth() + 3);
   const maxDateString = maxDate.toISOString().split('T')[0];
@@ -84,7 +90,7 @@ const ScheduleStep: React.FC<ScheduleStepProps> = ({
       <h2 className="text-xl font-bold text-gray-900 mb-2">Schedule Your Cleaning</h2>
       <p className="text-gray-600 mb-6">Select a convenient date and time for your service.</p>
       
-      {/* Date Selection */}
+      {/* Date Selection - Original Structure */}
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-2">
           Preferred Date <span className="text-red-500">*</span>
@@ -95,7 +101,7 @@ const ScheduleStep: React.FC<ScheduleStepProps> = ({
             value={bookingDate}
             min={minDate}
             max={maxDateString}
-            onChange={(e) => setBookingDate(e.target.value)}
+            onChange={handleDateChange}
             onBlur={() => onBlur('bookingDate')}
             required
             className={`block w-full pl-10 pr-3 py-3 border ${
@@ -118,7 +124,7 @@ const ScheduleStep: React.FC<ScheduleStepProps> = ({
         )}
       </div>
       
-      {/* Time Slots */}
+      {/* Time Slots - Original Structure */}
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-2">
           Preferred Time <span className="text-red-500">*</span>
@@ -128,7 +134,7 @@ const ScheduleStep: React.FC<ScheduleStepProps> = ({
             <button
               key={time}
               type="button"
-              onClick={() => setBookingTime(time)}
+              onClick={() => handleTimeChange(time)}
               className={`py-2 px-1 border rounded-lg text-sm font-medium transition-colors ${
                 bookingTime === time
                   ? 'bg-pink-500 text-white border-pink-500'
@@ -144,7 +150,7 @@ const ScheduleStep: React.FC<ScheduleStepProps> = ({
         )}
       </div>
       
-      {/* Duration */}
+      {/* Duration - Original Structure */}
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-2">
           Service Duration
@@ -154,7 +160,7 @@ const ScheduleStep: React.FC<ScheduleStepProps> = ({
             <button
               key={hours}
               type="button"
-              onClick={() => setDuration(hours)}
+              onClick={() => handleDurationChange(hours)}
               className={`flex-1 py-2 border-2 rounded-lg text-sm font-medium transition-colors ${
                 duration === hours
                   ? 'bg-pink-500 text-white border-pink-500'
@@ -165,12 +171,9 @@ const ScheduleStep: React.FC<ScheduleStepProps> = ({
             </button>
           ))}
         </div>
-        <p className="text-xs text-gray-500">
-          We recommend {propertyTypeRecommendation(duration)} for most homes
-        </p>
       </div>
       
-      {/* Price Display */}
+      {/* Price Display - Original Structure */}
       <div className="bg-pink-50 p-4 rounded-lg border border-pink-200 mt-8 md:block hidden">
         <div className="flex justify-between items-center">
           <div>
@@ -181,84 +184,15 @@ const ScheduleStep: React.FC<ScheduleStepProps> = ({
         </div>
       </div>
 
-      {/* Desktop Navigation Buttons */}
-      <div className="flex justify-between mt-8 md:flex hidden">
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex items-center px-4 py-2 border border-gray-300 text-base font-medium rounded-full shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
-        >
-          <svg className="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back
-        </button>
-        
-        <button
-          type="button"
-          onClick={onNext}
-          className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
-        >
-          Continue
-          <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Floating Navigation Buttons for Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 md:hidden z-50">
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex flex-col justify-center">
-            <span className="text-sm text-gray-600">Total Cost</span>
-            <span className="text-xl font-bold text-pink-600">AED {totalCost}</span>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={onBack}
-            className="py-3 px-4 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
-          >
-            <svg className="inline-block mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-          </button>
-          
-          <button
-            type="button"
-            onClick={onNext}
-            className="py-3 px-4 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
-          >
-            Continue
-            <svg className="inline-block ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-      </div>
+      {/* Use StepNavigation Component */}
+      <StepNavigation 
+        onNext={onNext}
+        onBack={onBack}
+        totalCost={totalCost}
+        currentStep={3}
+      />
     </div>
   );
-};
-
-// Helper function to provide duration recommendations
-const propertyTypeRecommendation = (duration: number): string => {
-  switch (duration) {
-    case 2:
-      return '2 hours for studio or 1-bedroom apartments';
-    case 3:
-      return '3 hours for 2-bedroom apartments';
-    case 4:
-      return '4 hours for 3-bedroom homes';
-    case 5:
-      return '5 hours for 4-bedroom homes';
-    case 6:
-      return '6 hours for large properties';
-    default:
-      return `${duration} hours`;
-  }
 };
 
 export default ScheduleStep; 

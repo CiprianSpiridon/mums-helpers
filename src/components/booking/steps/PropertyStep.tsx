@@ -1,38 +1,41 @@
+'use client';
+
 import React from 'react';
 import { PropertyIcons } from '../BookingIcons';
+import { useBookingContext } from '@/context/BookingContext';
+import StepNavigation from '../StepNavigation';
 
 interface PropertyStepProps {
-  propertyType: string;
-  setPropertyType: (type: string) => void;
-  numRooms: number;
-  setNumRooms: (rooms: number) => void;
   onNext: () => void;
   onBack: () => void;
   totalCost: number;
 }
 
-const PropertyStep: React.FC<PropertyStepProps> = ({
-  propertyType,
-  setPropertyType,
-  numRooms,
-  setNumRooms,
-  onNext,
-  onBack,
-  totalCost
-}) => {
+const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }) => {
+  const { state, dispatch } = useBookingContext();
+  const { propertyType, numRooms } = state;
+
+  const handlePropertyTypeChange = (type: string) => {
+    dispatch({ type: 'SET_FIELD', field: 'propertyType', value: type });
+  };
+
+  const handleNumRoomsChange = (value: number) => {
+    const rooms = Math.max(0, value);
+    dispatch({ type: 'SET_FIELD', field: 'numRooms', value: rooms });
+  };
+
   return (
     <div className="space-y-8 pb-24 md:pb-0">
       <h2 className="text-xl font-bold text-gray-900 mb-2">Property Details</h2>
       <p className="text-gray-600 mb-6">Tell us about your property to customize your service.</p>
       
-      {/* Property Type Cards */}
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-3">
           Property Type
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           <div 
-            onClick={() => setPropertyType('house')}
+            onClick={() => handlePropertyTypeChange('house')}
             className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
               propertyType === 'house' 
                 ? 'border-pink-500 bg-pink-50' 
@@ -47,9 +50,8 @@ const PropertyStep: React.FC<PropertyStepProps> = ({
             </div>
             <p className="text-sm text-gray-700">Villa, townhouse or independent home</p>
           </div>
-
           <div 
-            onClick={() => setPropertyType('flat')}
+            onClick={() => handlePropertyTypeChange('flat')}
             className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
               propertyType === 'flat' 
                 ? 'border-pink-500 bg-pink-50' 
@@ -67,7 +69,6 @@ const PropertyStep: React.FC<PropertyStepProps> = ({
         </div>
       </div>
 
-      {/* Number of Rooms */}
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-3">
           How many bedrooms do you have?
@@ -77,7 +78,7 @@ const PropertyStep: React.FC<PropertyStepProps> = ({
             <button
               key={rooms}
               type="button"
-              onClick={() => setNumRooms(typeof rooms === 'string' ? 6 : rooms)}
+              onClick={() => handleNumRoomsChange(typeof rooms === 'string' ? 6 : rooms)} 
               className={`flex-1 py-2 border-2 rounded-lg text-sm font-medium transition-colors ${
                 (typeof rooms === 'string' && numRooms >= 6) || numRooms === rooms
                   ? 'bg-pink-500 text-white border-pink-500'
@@ -93,7 +94,6 @@ const PropertyStep: React.FC<PropertyStepProps> = ({
         </p>
       </div>
       
-      {/* Price Display */}
       <div className="bg-pink-50 p-4 rounded-lg border border-pink-200 mt-8 md:block hidden">
         <div className="flex justify-between items-center">
           <div>
@@ -104,64 +104,12 @@ const PropertyStep: React.FC<PropertyStepProps> = ({
         </div>
       </div>
 
-      {/* Desktop Navigation Buttons */}
-      <div className="flex justify-between mt-8 md:flex hidden">
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex items-center px-4 py-2 border border-gray-300 text-base font-medium rounded-full shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
-        >
-          <svg className="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back
-        </button>
-        
-        <button
-          type="button"
-          onClick={onNext}
-          className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
-        >
-          Continue
-          <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Floating Navigation Buttons for Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 md:hidden z-50">
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex flex-col justify-center">
-            <span className="text-sm text-gray-600">Total Cost</span>
-            <span className="text-xl font-bold text-pink-600">AED {totalCost}</span>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={onBack}
-            className="py-3 px-4 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
-          >
-            <svg className="inline-block mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-          </button>
-          
-          <button
-            type="button"
-            onClick={onNext}
-            className="py-3 px-4 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
-          >
-            Continue
-            <svg className="inline-block ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-      </div>
+      <StepNavigation 
+        onNext={onNext}
+        onBack={onBack}
+        totalCost={totalCost}
+        currentStep={2}
+      />
     </div>
   );
 };

@@ -1,80 +1,55 @@
+'use client';
+
 import React from 'react';
 import { FormIcons } from '../BookingIcons';
 import FormSummary from '../FormSummary';
+import { useBookingContext } from '@/context/BookingContext';
+import StepNavigation from '../StepNavigation';
 
 interface ContactStepProps {
-  name: string;
-  setName: (name: string) => void;
-  email: string;
-  setEmail: (email: string) => void;
-  phone: string;
-  setPhone: (phone: string) => void;
   onNext: () => void;
   onBack: () => void;
-  serviceType: string;
-  propertyType: string;
-  numRooms: number;
-  bookingDate: string;
-  bookingTime: string;
-  duration: number;
-  address: string;
   totalCost: number;
-  errors?: Record<string, string>;
-  touched?: Record<string, boolean>;
-  onBlur?: (field: string) => void;
+  errors: Record<string, string>;
+  touched: Record<string, boolean>;
+  onBlur: (field: string) => void;
 }
 
 const ContactStep: React.FC<ContactStepProps> = ({
-  name,
-  setName,
-  email,
-  setEmail,
-  phone,
-  setPhone,
   onNext,
   onBack,
-  serviceType,
-  propertyType,
-  numRooms,
-  bookingDate,
-  bookingTime,
-  duration,
-  address,
   totalCost,
-  errors = {},
-  touched = {},
-  onBlur = () => {},
+  errors,
+  touched,
+  onBlur,
 }) => {
+  const { state, dispatch } = useBookingContext();
+  const { name, email, phone } = state;
+
+  const handleFieldChange = (field: 'name' | 'email' | 'phone', value: string) => {
+    dispatch({ type: 'SET_FIELD', field, value });
+  };
+
   return (
     <div className="space-y-8 pb-24 md:pb-0">
       <h2 className="text-xl font-bold text-gray-900 mb-2">Contact Details</h2>
       <p className="text-gray-600 mb-6">Please provide your contact information to complete your booking.</p>
       
-      {/* Booking Summary */}
       <FormSummary
-        serviceType={serviceType}
-        propertyType={propertyType}
-        numRooms={numRooms}
-        bookingDate={bookingDate}
-        bookingTime={bookingTime}
-        duration={duration}
-        address={address}
-        totalCost={totalCost}
         isCollapsible={true}
       />
       
-      {/* Contact Form */}
       <div className="space-y-6 mt-6">
-        {/* Full Name */}
         <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-1">
+          <label htmlFor="name" className="block text-sm font-semibold text-gray-800 mb-1">
             Full Name <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
               type="text"
+              id="name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => handleFieldChange('name', e.target.value)}
               onBlur={() => onBlur('name')}
               placeholder="Your full name"
               required
@@ -93,16 +68,16 @@ const ContactStep: React.FC<ContactStepProps> = ({
           )}
         </div>
         
-        {/* Email */}
         <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-1">
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-800 mb-1">
             Email Address <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
               type="email"
+              id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => handleFieldChange('email', e.target.value)}
               onBlur={() => onBlur('email')}
               placeholder="Your email address"
               required
@@ -121,16 +96,16 @@ const ContactStep: React.FC<ContactStepProps> = ({
           )}
         </div>
         
-        {/* Phone */}
         <div>
-          <label className="block text-sm font-semibold text-gray-800 mb-1">
+          <label htmlFor="phone" className="block text-sm font-semibold text-gray-800 mb-1">
             Phone Number <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
               type="tel"
+              id="phone"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => handleFieldChange('phone', e.target.value)}
               onBlur={() => onBlur('phone')}
               placeholder="Your phone number"
               required
@@ -172,64 +147,12 @@ const ContactStep: React.FC<ContactStepProps> = ({
         </div>
       </div>
       
-      {/* Desktop Navigation Buttons */}
-      <div className="flex justify-between mt-8 md:flex hidden">
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex items-center px-4 py-2 border border-gray-300 text-base font-medium rounded-full shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
-        >
-          <svg className="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back
-        </button>
-        
-        <button
-          type="button"
-          onClick={onNext}
-          className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
-        >
-          Complete Booking
-          <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Floating Navigation Buttons for Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 md:hidden z-50">
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex flex-col justify-center">
-            <span className="text-sm text-gray-600">Total Cost</span>
-            <span className="text-xl font-bold text-pink-600">AED {totalCost}</span>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={onBack}
-            className="py-3 px-4 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
-          >
-            <svg className="inline-block mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-          </button>
-          
-          <button
-            type="button"
-            onClick={onNext}
-            className="py-3 px-4 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-200"
-          >
-            Complete
-            <svg className="inline-block ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-      </div>
+      <StepNavigation 
+        onNext={onNext}
+        onBack={onBack}
+        totalCost={totalCost}
+        currentStep={5}
+      />
     </div>
   );
 };
