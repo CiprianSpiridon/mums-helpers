@@ -15,7 +15,7 @@ interface ServiceTypeStepProps {
 const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) => {
   const { state, dispatch } = useBookingContext();
   const { serviceType } = state;
-  const { t } = useTranslation();
+  const { t, isRtl } = useTranslation();
 
   const handleServiceTypeChange = (type: string) => {
     dispatch({ type: 'SET_FIELD', field: 'serviceType', value: type });
@@ -35,7 +35,7 @@ const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) 
           }`}
         >
           <div className="flex items-center mb-2">
-            <div className={`p-3 rounded-full mr-3 ${serviceType === 'regular' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
+            <div className={`p-3 rounded-full ${isRtl ? 'ml-3' : 'mr-3'} ${serviceType === 'regular' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
               {ServiceIcons.regular} 
             </div>
             <div>
@@ -43,7 +43,7 @@ const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) 
               <p className="text-gray-600">{t('serviceStep.fromPrice', 120)}</p> 
             </div>
           </div>
-          <p className="text-sm text-gray-700 ml-14">{t('serviceStep.regularDescription')}</p>
+          <p className={`text-sm text-gray-700 ${isRtl ? 'mr-14 text-right' : 'ml-14 text-left'}`}>{t('serviceStep.regularDescription')}</p>
         </div>
 
         <div 
@@ -55,7 +55,7 @@ const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) 
           }`}
         >
            <div className="flex items-center mb-2">
-            <div className={`p-3 rounded-full mr-3 ${serviceType === 'deep' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
+            <div className={`p-3 rounded-full ${isRtl ? 'ml-3' : 'mr-3'} ${serviceType === 'deep' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
               {ServiceIcons.deep}
             </div>
             <div>
@@ -63,7 +63,7 @@ const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) 
               <p className="text-gray-600">{t('serviceStep.fromPrice', 200)}</p>
             </div>
           </div>
-          <p className="text-sm text-gray-700 ml-14">{t('serviceStep.deepDescription')}</p>
+          <p className={`text-sm text-gray-700 ${isRtl ? 'mr-14 text-right' : 'ml-14 text-left'}`}>{t('serviceStep.deepDescription')}</p>
         </div>
 
         <div 
@@ -75,7 +75,7 @@ const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) 
           }`}
         >
           <div className="flex items-center mb-2">
-            <div className={`p-3 rounded-full mr-3 ${serviceType === 'move' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
+            <div className={`p-3 rounded-full ${isRtl ? 'ml-3' : 'mr-3'} ${serviceType === 'move' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
               {ServiceIcons.move}
             </div>
             <div>
@@ -83,7 +83,7 @@ const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) 
               <p className="text-gray-600">{t('serviceStep.fromPrice', 250)}</p>
             </div>
           </div>
-          <p className="text-sm text-gray-700 ml-14">{t('serviceStep.moveDescription')}</p>
+          <p className={`text-sm text-gray-700 ${isRtl ? 'mr-14 text-right' : 'ml-14 text-left'}`}>{t('serviceStep.moveDescription')}</p>
         </div>
       </div>
 

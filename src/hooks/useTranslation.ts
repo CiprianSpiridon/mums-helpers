@@ -11,9 +11,10 @@ export const useTranslation = () => {
   const { state } = useLanguageContext();
   const currentLanguage = state.language || 'en'; // Default to English
   const currentTranslations = translations[currentLanguage];
+  const isRtl = currentLanguage === 'ar'; // Calculate RTL flag here
 
   // Log the language being used by the hook
-  console.log('[useTranslation] Using language:', currentLanguage);
+  console.log('[useTranslation] Using language:', currentLanguage, 'isRtl:', isRtl);
 
   /**
    * Gets a translation string for the current language.
@@ -51,8 +52,13 @@ export const useTranslation = () => {
       else if (key === 'progressSteps.stepIndicator' && typeof result === 'function') {
          const current = typeof params[0] === 'number' ? params[0] : 0;
          const total = typeof params[1] === 'number' ? params[1] : 0;
-         // Explicitly cast the function type
          return (result as (current: number, total: number) => string)(current, total);
+      }
+      // Handle confirmation subtitle function
+      else if (key === 'confirmationStep.subtitle' && typeof result === 'function') {
+        // Expecting the first param to be the name string
+        const nameParam = typeof params[0] === 'string' ? params[0] : '';
+        return (result as (name: string) => string)(nameParam);
       }
        // Add handlers for other potential function types here
 
@@ -74,5 +80,5 @@ export const useTranslation = () => {
   //   dispatch({ type: 'SET_LANGUAGE', language: lang });
   // };
 
-  return { t, currentLanguage };
+  return { t, currentLanguage, isRtl };
 }; 

@@ -24,7 +24,7 @@ const sampleBookings = [
     maid: {
       name: 'Sarah Johnson',
       rating: 4.8,
-      image: '/maid1.jpg',
+      image: `https://ui-avatars.com/api/?name=Sarah+Johnson&background=random&color=fff`,
     },
   },
   {
@@ -39,7 +39,7 @@ const sampleBookings = [
     maid: {
       name: 'Maria Garcia',
       rating: 4.9,
-      image: '/maid2.jpg',
+      image: `https://ui-avatars.com/api/?name=Maria+Garcia&background=random&color=fff`,
     },
   },
   {
@@ -54,7 +54,7 @@ const sampleBookings = [
     maid: {
       name: 'Sarah Johnson',
       rating: 4.8,
-      image: '/maid1.jpg',
+      image: `https://ui-avatars.com/api/?name=Sarah+Johnson&background=random&color=fff`,
     },
   },
   {
@@ -69,7 +69,7 @@ const sampleBookings = [
     maid: {
       name: 'Emma Wilson',
       rating: 4.7,
-      image: '/maid3.jpg',
+      image: `https://ui-avatars.com/api/?name=Emma+Wilson&background=random&color=fff`,
     },
   },
   {
@@ -84,7 +84,7 @@ const sampleBookings = [
     maid: {
       name: 'Maria Garcia',
       rating: 4.9,
-      image: '/maid2.jpg',
+      image: `https://ui-avatars.com/api/?name=Maria+Garcia&background=random&color=fff`,
     },
   },
   {
@@ -99,7 +99,7 @@ const sampleBookings = [
     maid: {
       name: 'Sarah Johnson',
       rating: 4.8,
-      image: '/maid1.jpg',
+      image: `https://ui-avatars.com/api/?name=Sarah+Johnson&background=random&color=fff`,
     },
   },
   {
@@ -114,7 +114,7 @@ const sampleBookings = [
     maid: {
       name: 'Emma Wilson',
       rating: 4.7,
-      image: '/maid3.jpg',
+      image: `https://ui-avatars.com/api/?name=Emma+Wilson&background=random&color=fff`,
     },
   },
 ];

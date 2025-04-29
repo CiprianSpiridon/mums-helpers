@@ -5,17 +5,16 @@ import React from 'react';
 // import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
 import { getServiceTranslationKey } from '@/lib/formatters';
+// Remove self-import
+// import type { BookingStatus, Booking, Maid } from './BookingCard'; 
 
-// Define and export the status type
-export type BookingStatus = 'scheduled' | 'completed' | 'cancelled' | 'all'; // Add 'all' if used for filtering
-
-// Define and export the structure of a booking and maid object
+// Define and export types directly
+export type BookingStatus = 'scheduled' | 'completed' | 'cancelled' | 'all';
 export interface Maid {
   name: string;
   rating: number;
-  image?: string; // Optional image
+  image?: string; 
 }
-
 export interface Booking {
   id: string;
   serviceType: string;
@@ -28,13 +27,16 @@ export interface Booking {
   maid: Maid;
 }
 
+// Remove duplicate export
+// export type { BookingStatus, Booking, Maid }; 
+
 interface BookingCardProps {
   booking: Booking;
   getStatusBadge: (status: string) => React.ReactNode; // Pass badge renderer as prop
 }
 
 const BookingCard: React.FC<BookingCardProps> = ({ booking, getStatusBadge }) => {
-  const { t } = useTranslation();
+  const { t, isRtl } = useTranslation();
 
   // Reusable date/time formatting (could also be moved to formatters.ts)
   const formatDate = (dateString: string) => {
@@ -91,7 +93,7 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, getStatusBadge }) =>
           <div>
             <p className="text-sm font-medium text-gray-500">{t('myBookingsPage.maid')}</p>
             <div className="flex items-center mt-1">
-              <div className="w-8 h-8 bg-gray-200 rounded-full flex-shrink-0 overflow-hidden mr-2">
+              <div className={`w-8 h-8 bg-gray-200 rounded-full flex-shrink-0 overflow-hidden ${isRtl ? 'ml-2' : 'mr-2'}`}>
                 {booking.maid.image ? (
                     <img src={booking.maid.image} alt={booking.maid.name} className="w-full h-full object-cover" />
                 ) : (

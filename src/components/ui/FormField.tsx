@@ -34,9 +34,29 @@ const FormField: React.FC<FormFieldProps> = ({
   isTextArea = false,
   rows = 3,
 }) => {
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useTranslation();
+  const isRtl = currentLanguage === 'ar';
   const hasError = touched && error;
   const InputComponent = isTextArea ? 'textarea' : 'input';
+
+  // Specific handling for date/time inputs
+  const isDateTime = type === 'date' || type === 'time';
+  // Should we render the custom icon?
+  const shouldRenderIcon = icon && !isDateTime; 
+
+  // Determine padding: Use default for date/time, otherwise LTR/RTL logic for icon space
+  const paddingClass = shouldRenderIcon ? 
+    (isRtl ? 'pr-10 pl-3' : 'pl-10 pr-3') : 
+    'px-3'; 
+    
+  // Determine icon position only if we should render it
+  const iconContainerClass = shouldRenderIcon ? 
+    (isRtl ? 
+      'absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none' : 
+      'absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none')
+    : '';
+
+  const textAlignClass = isRtl ? 'text-right' : 'text-left'; 
 
   return (
     <div>
@@ -54,7 +74,7 @@ const FormField: React.FC<FormFieldProps> = ({
           placeholder={placeholder}
           required={required}
           rows={isTextArea ? rows : undefined} // Rows only for textarea
-          className={`block w-full ${icon ? 'pl-10' : 'pl-3'} pr-3 py-3 border ${
+          className={`block w-full ${paddingClass} ${textAlignClass} py-3 border ${
             hasError
               ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
               : 'border-gray-300 focus:ring-pink-500 focus:border-pink-500'
@@ -62,9 +82,10 @@ const FormField: React.FC<FormFieldProps> = ({
           aria-invalid={hasError ? 'true' : 'false'}
           aria-describedby={hasError ? `${id}-error` : undefined}
         />
-        {icon && (
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            {icon}
+        {/* Conditionally render icon container only if shouldRenderIcon is true */} 
+        {shouldRenderIcon && (
+          <div className={iconContainerClass}>
+             {icon} 
           </div>
         )}
       </div>

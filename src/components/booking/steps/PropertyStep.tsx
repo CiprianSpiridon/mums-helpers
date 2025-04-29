@@ -16,7 +16,7 @@ interface PropertyStepProps {
 const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }) => {
   const { state, dispatch } = useBookingContext();
   const { propertyType, numRooms } = state;
-  const { t } = useTranslation();
+  const { t, isRtl } = useTranslation();
 
   const handlePropertyTypeChange = (type: string) => {
     dispatch({ type: 'SET_FIELD', field: 'propertyType', value: type });
@@ -46,12 +46,12 @@ const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }
             }`}
           >
             <div className="flex items-center mb-2">
-              <div className={`p-2 rounded-full mr-2 ${propertyType === 'house' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
+              <div className={`p-2 rounded-full ${isRtl ? 'ml-2' : 'mr-2'} ${propertyType === 'house' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
                 {PropertyIcons.house}
               </div>
               <h3 className="font-semibold text-gray-900">{t('propertyStep.house')}</h3>
             </div>
-            <p className="text-sm text-gray-700">{t('propertyStep.houseDesc')}</p>
+            <p className={`text-sm text-gray-700 ${isRtl ? 'text-right' : 'text-left'}`}>{t('propertyStep.houseDesc')}</p>
           </div>
           <div 
             onClick={() => handlePropertyTypeChange('flat')}
@@ -62,12 +62,12 @@ const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }
             }`}
           >
             <div className="flex items-center mb-2">
-              <div className={`p-2 rounded-full mr-2 ${propertyType === 'flat' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
+              <div className={`p-2 rounded-full ${isRtl ? 'ml-2' : 'mr-2'} ${propertyType === 'flat' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
                 {PropertyIcons.flat}
               </div>
               <h3 className="font-semibold text-gray-900">{t('propertyStep.flat')}</h3>
             </div>
-            <p className="text-sm text-gray-700">{t('propertyStep.flatDesc')}</p>
+            <p className={`text-sm text-gray-700 ${isRtl ? 'text-right' : 'text-left'}`}>{t('propertyStep.flatDesc')}</p>
           </div>
         </div>
       </div>
