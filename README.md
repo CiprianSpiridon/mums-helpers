@@ -14,14 +14,12 @@ maid-booking-ui/
 │   └── ...
 ├── src/             # Main application source code
 │   ├── app/         # Next.js App Router pages and layouts
-│   │   ├── (booking)/ # Route group for booking form pages
-│   │   │   └── page.tsx # Main booking form page
 │   │   ├── my-bookings/ # Page for viewing past/scheduled bookings
 │   │   │   └── page.tsx
 │   │   ├── _not-found/  # Custom Not Found page (auto-generated)
 │   │   ├── favicon.ico/ # Favicon handling (auto-generated)
 │   │   ├── layout.tsx   # Root layout for the application
-│   │   └── page.tsx     # Home page of the application
+│   │   └── page.tsx     # Home page (booking form) of the application
 │   ├── components/  # Reusable React components
 │   │   ├── booking/     # Components specific to the booking form process
 │   │   │   ├── steps/   # Individual step components for the multi-step form
@@ -33,17 +31,32 @@ maid-booking-ui/
 │   │   │   │   └── ConfirmationStep.tsx
 │   │   │   ├── AddressMapSelector.tsx # Combined address input and map selector
 │   │   │   ├── BookingIcons.tsx       # Icons used in the booking form
-│   │   │   ├── FormStepProgress.tsx   # Progress indicator for steps (potentially unused)
+│   │   │   ├── DesktopPriceDisplay.tsx# Component for desktop price summary
 │   │   │   ├── FormSummary.tsx        # Summary component shown during booking steps
 │   │   │   ├── GoogleMapComponent.tsx # Google Maps component with fixed center marker
 │   │   │   ├── PriceBreakdownModal.tsx# Modal to show price details
-│   │   │   └── ProgressSteps.tsx      # Visual progress bar for the steps
+│   │   │   ├── ProgressSteps.tsx      # Visual progress bar for the steps
+│   │   │   └── StepNavigation.tsx     # Reusable Next/Back navigation buttons
+│   │   ├── my-bookings/ # Components specific to the My Bookings page
+│   │   │   ├── BookingCard.tsx      # Displays a single booking item
+│   │   │   ├── BookingFilters.tsx   # Contains status tabs and service filter
+│   │   │   └── EmptyState.tsx       # Displayed when no bookings match filters
+│   │   ├── ui/          # General UI components (like FormField)
+│   │   │   └── FormField.tsx        # Reusable form input component
 │   │   ├── BookingForm.tsx # Main component orchestrating the multi-step booking form
+│   │   ├── ClientLayoutWrapper.tsx # Client component applying dynamic html attrs
 │   │   ├── Footer.tsx      # Application footer component
 │   │   └── Header.tsx      # Application header component
 │   ├── config/      # Configuration files
-│   │   └── pricingConfig.ts # Defines pricing rules and calculations
-│   └── lib/         # Utility functions or library code (if any)
+│   │   ├── pricingConfig.ts # Defines pricing rules and calculations
+│   │   └── translations.ts  # Text strings for EN/AR localization
+│   ├── context/     # React Context providers
+│   │   ├── BookingContext.tsx   # Manages state for the booking form data
+│   │   └── LanguageContext.tsx  # Manages current language state
+│   └── lib/         # Utility functions
+│       └── formatters.ts      # Helper functions for formatting/translation keys
+│   └── hooks/       # Custom React hooks
+│       └── useTranslation.ts  # Hook for accessing translations
 ├── .env.local       # Local environment variables (API keys, etc. - **DO NOT COMMIT**)
 ├── .gitignore       # Files and directories ignored by Git
 ├── eslint.config.mjs# ESLint configuration
@@ -59,14 +72,17 @@ maid-booking-ui/
 ## Key Areas
 
 *   **Routing & Pages (`src/app`)**: Uses the Next.js App Router.
-    *   The main booking form is located at the root (`/`) defined in `src/app/(booking)/page.tsx`.
+    *   The main booking form is located at the root (`/`) defined in `src/app/page.tsx`.
     *   The "My Bookings" page is at `/my-bookings`.
-    *   The root layout (`src/app/layout.tsx`) likely includes the `Header` and `Footer`.
-*   **Booking Form Logic (`src/components/BookingForm.tsx`)**: This component manages the state for the multi-step form, handles navigation between steps, performs validation, and calculates the total cost using the pricing configuration.
-*   **Booking Steps (`src/components/booking/steps/`)**: Each file in this directory represents a distinct step in the booking process (Service Type, Property Details, Schedule, Location, Contact Info, Confirmation).
-*   **Map Component (`src/components/booking/GoogleMapComponent.tsx`)**: Provides the interactive map for address selection, featuring a marker fixed to the center of the viewport. Requires Google Maps API keys set in `.env.local`.
-*   **Pricing (`src/config/pricingConfig.ts`)**: Contains the core logic for calculating the booking cost based on service type, property details, number of rooms, and duration.
-*   **Styling**: Primarily uses Tailwind CSS, configured via `tailwind.config.ts` (implicitly included via PostCSS) and `globals.css` (likely imported in `layout.tsx`).
+    *   The root layout (`src/app/layout.tsx`) sets up providers and uses `ClientLayoutWrapper`.
+*   **State Management (`src/context`)**: Uses React Context API.
+    *   `LanguageContext`: Manages the application language (`en`/`ar`). Provided globally in `layout.tsx`.
+    *   `BookingContext`: Manages the state of the multi-step booking form. Provided specifically around the form in `src/app/page.tsx`.
+*   **Booking Form (`src/components/booking/`, `src/components/BookingForm.tsx`)**: Orchestrates the form flow, validation, and step rendering.
+*   **Reusable UI (`src/components/ui/`, `src/components/booking/StepNavigation.tsx`, etc.)**: Contains general components like `FormField` and specific reusable parts like `StepNavigation`.
+*   **My Bookings Page (`src/app/my-bookings/`, `src/components/my-bookings/`)**: Displays user bookings with filtering and uses extracted components (`BookingCard`, `BookingFilters`).
+*   **Internationalization (i18n)**: Handled via `LanguageContext`, `useTranslation` hook (`src/hooks/`), and text definitions in `src/config/translations.ts`.
+*   **Utilities (`src/lib/`)**: Contains shared helper functions like formatters.
 
 ## Key Libraries & Technologies
 
