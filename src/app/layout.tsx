@@ -1,6 +1,10 @@
-import type { Metadata } from "next";
+'use client'; // Make layout a client component to access context
+
+// Remove unused Metadata import
+// import type { Metadata } from "next"; 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { LanguageProvider, useLanguageContext } from '@/context/LanguageContext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,10 +16,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "MumzHelpers - Maid Booking Services",
-  description: "Book professional cleaning and maid services with MumzHelpers",
-};
+// Metadata might need adjustment or alternative handling in client components
+// export const metadata: Metadata = { ... }; 
+// Consider setting title dynamically within the component if needed
+
+// Inner component to access context after provider
+function LayoutContent({ children }: { children: React.ReactNode }) {
+  const { state } = useLanguageContext();
+  const currentLang = state.language;
+
+  return (
+    <html lang={currentLang} dir={currentLang === 'ar' ? 'rtl' : 'ltr'}>
+      <head>
+        {/* Metadata can be managed via next/head in client components */}
+        <title>MumzHelpers - Maid Booking Services</title>
+        <meta name="description" content="Book professional cleaning and maid services with MumzHelpers" />
+        {/* Add other head elements like favicons here */}
+      </head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+          {children}
+      </body>
+    </html>
+  );
+}
 
 export default function RootLayout({
   children,
@@ -23,12 +48,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    // LanguageProvider wraps the content that needs language state
+    <LanguageProvider>
+      <LayoutContent>{children}</LayoutContent>
+    </LanguageProvider>
   );
 }

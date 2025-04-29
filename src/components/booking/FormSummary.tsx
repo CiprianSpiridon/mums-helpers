@@ -1,65 +1,47 @@
+'use client';
+
 import React, { useState } from 'react';
-import { SERVICE_LABELS, PROPERTY_LABELS } from '../../config/pricingConfig';
+// Remove unused label imports
+// import { SERVICE_LABELS, PROPERTY_LABELS } from '../../config/pricingConfig'; 
+import { useBookingContext } from '@/context/BookingContext';
+import { useTranslation } from '@/hooks/useTranslation';
+// Import formatters
+import { 
+  getServiceTranslationKey, 
+  getPropertyTranslationKey, 
+  formatDate, 
+  formatTime 
+} from '@/lib/formatters';
 
 interface FormSummaryProps {
-  serviceType: string;
-  propertyType: string;
-  numRooms: number;
-  bookingDate: string;
-  bookingTime: string;
-  duration: number;
-  address: string;
-  totalCost: number;
   isCollapsible?: boolean;
 }
 
-const FormSummary: React.FC<FormSummaryProps> = ({
-  serviceType,
-  propertyType,
-  numRooms,
-  bookingDate,
-  bookingTime,
-  duration,
-  address,
-  totalCost,
-  isCollapsible = true
-}) => {
+const FormSummary: React.FC<FormSummaryProps> = ({ isCollapsible = true }) => {
+  const { state } = useBookingContext();
+  const { t } = useTranslation();
+  const {
+    serviceType,
+    propertyType,
+    numRooms,
+    bookingDate,
+    bookingTime,
+    duration,
+    address,
+    totalCost
+  } = state;
+  
   const [isExpanded, setIsExpanded] = useState(!isCollapsible);
 
-  // Format the date for display
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-AE', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  // Format the time for display
-  const formatTime = (timeString: string) => {
-    if (!timeString) return '';
-    const [hours, minutes] = timeString.split(':');
-    const hour = parseInt(hours, 10);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const hour12 = hour % 12 || 12;
-    return `${hour12}:${minutes} ${ampm}`;
-  };
-
   return (
-    <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+    <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden w-full sm:w-auto mb-4 sm:mb-0">
       {/* Header */}
       <div 
-        className={`flex justify-between items-center p-4 border-b border-gray-200 ${isCollapsible ? 'cursor-pointer' : ''}`}
+        className={`flex justify-between items-center p-4 ${isCollapsible ? 'cursor-pointer border-b border-gray-200' : ''}`}
         onClick={() => isCollapsible && setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center">
-          <h3 className="font-medium text-gray-900">Booking Summary</h3>
-          <span className="ml-2 text-sm text-gray-600">
-            {SERVICE_LABELS[serviceType as keyof typeof SERVICE_LABELS] || serviceType}
-          </span>
+          <h3 className="font-medium text-gray-900">{t('summary')}</h3>
         </div>
         
         {isCollapsible && (
@@ -84,42 +66,49 @@ const FormSummary: React.FC<FormSummaryProps> = ({
       {/* Details */}
       {isExpanded && (
         <div className="p-4 space-y-2 text-sm">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1">
             <div>
-              <div className="text-gray-500">Service</div>
+              <div className="text-gray-500">{t('confirmationStep.serviceLabel')}</div>
               <div className="font-medium text-gray-900">
-                {SERVICE_LABELS[serviceType as keyof typeof SERVICE_LABELS] || serviceType}
+                {t(getServiceTranslationKey(serviceType))}
               </div>
             </div>
             
             <div>
-              <div className="text-gray-500">Property</div>
+              <div className="text-gray-500">{t('confirmationStep.propertyLabel')}</div>
               <div className="font-medium text-gray-900">
-                {PROPERTY_LABELS[propertyType as keyof typeof PROPERTY_LABELS] || propertyType}, {numRooms} room{numRooms !== 1 ? 's' : ''}
+                {t(getPropertyTranslationKey(propertyType))}
+                {numRooms > 0 ? `, ${numRooms} ${numRooms === 1 ? t('common.room') : t('common.rooms')}` : ''}
               </div>
             </div>
             
-            <div>
-              <div className="text-gray-500">Date & Time</div>
-              <div className="font-medium text-gray-900">
-                {formatDate(bookingDate)}, {formatTime(bookingTime)}
+            {(bookingDate || bookingTime) && (
+              <div>
+                <div className="text-gray-500">{t('confirmationStep.dateTimeLabel')}</div>
+                <div className="font-medium text-gray-900">
+                  {formatDate(bookingDate)}{bookingDate && bookingTime ? ', ' : ''}{formatTime(bookingTime)}
+                </div>
               </div>
-            </div>
+            )}
             
-            <div>
-              <div className="text-gray-500">Duration</div>
-              <div className="font-medium text-gray-900">{duration} hour{duration !== 1 ? 's' : ''}</div>
-            </div>
+            {duration > 0 && (
+              <div>
+                <div className="text-gray-500">{t('confirmationStep.durationLabel')}</div>
+                <div className="font-medium text-gray-900">{duration} {t('scheduleStep.hours')}</div>
+              </div>
+            )}
           </div>
           
-          <div className="pt-2">
-            <div className="text-gray-500">Address</div>
-            <div className="font-medium text-gray-900">{address}</div>
-          </div>
+          {address && (
+             <div className="pt-2">
+               <div className="text-gray-500">{t('confirmationStep.addressLabel')}</div>
+               <div className="font-medium text-gray-900">{address}</div>
+             </div>
+          )}
           
           <div className="pt-3 mt-3 border-t border-gray-200 flex justify-between items-center">
-            <div className="text-gray-900 font-medium">Total Cost</div>
-            <div className="text-lg font-bold text-pink-600">AED {totalCost}</div>
+            <div className="text-gray-900 font-medium">{t('totalCost')}</div>
+            <div className="text-lg font-bold text-pink-600">{t('aed')} {totalCost}</div>
           </div>
         </div>
       )}

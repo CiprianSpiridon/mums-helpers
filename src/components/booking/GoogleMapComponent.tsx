@@ -232,22 +232,25 @@ const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
           return; // Exit if we can't extract coordinates
         }
         
-        console.log('Getting address for location:', lat, lng);
-        
-        // Create LatLngLiteral for geocoder
-        const locationLiteral: LatLngLiteral = { lat, lng };
-        
-        // Get address from coordinates
-        geocoderInstance.geocode({ location: locationLiteral }, (results, status) => {
-          console.log('Geocode Status:', status);
-          if (status === 'OK' && results && results[0]) {
-            const address = results[0].formatted_address;
-            console.log('Geocoded Address:', address);
-            onSelectLocation(address, lat, lng);
-          } else {
-            console.error('Geocode failed:', status);
-          }
-        });
+        if (lat !== undefined && lng !== undefined) {
+          console.log('Getting address for location:', lat, lng);
+          const locationLiteral: LatLngLiteral = { lat, lng };
+          
+          // Get address from coordinates
+          geocoderInstance.geocode({ location: locationLiteral }, (results, status) => {
+            console.log('Geocode Status:', status);
+            if (status === 'OK' && results && results[0]) {
+              const address = results[0].formatted_address;
+              console.log('Geocoded Address:', address);
+              // Pass lat and lng along with address
+              onSelectLocation(address, lat, lng); 
+            } else {
+              console.error('Geocode failed:', status);
+              // Optionally call onSelectLocation with only address or null coords on failure?
+              // onSelectLocation(address || '', undefined, undefined); // Example
+            }
+          });
+        }
       };
       
       // Get initial address from the default location

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { FormIcons } from './BookingIcons';
 import GoogleMapComponent from './GoogleMapComponent';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface AddressMapSelectorProps {
   address: string;
   setAddress: (address: string) => void;
-  onAddressSelect: (address: string) => void;
+  onAddressSelect: (address: string, lat?: number, lng?: number) => void;
   error?: string;
   touched?: boolean;
   onBlur?: () => void;
@@ -19,6 +20,7 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
   touched,
   onBlur = () => {},
 }) => {
+  const { t } = useTranslation();
   // Sample addresses for demo purposes
   // In a real app, these would come from a map API
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -53,13 +55,13 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
   
   const handleSelectAddress = (selectedAddress: string) => {
     setAddress(selectedAddress);
-    onAddressSelect(selectedAddress);
+    onAddressSelect(selectedAddress, undefined, undefined);
     setShowSuggestions(false);
   };
 
-  const handleMapLocationSelected = (selectedAddress: string) => {
+  const handleMapLocationSelected = (selectedAddress: string, lat?: number, lng?: number) => {
     setAddress(selectedAddress);
-    onAddressSelect(selectedAddress);
+    onAddressSelect(selectedAddress, lat, lng);
     setShowSuggestions(false);
   };
   
@@ -72,19 +74,19 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
   return (
     <div className="space-y-2">
       <label className="block text-sm font-semibold text-gray-800 mb-1">
-        Address <span className="text-red-500">*</span>
+        {t('locationStep.addressLabel')} <span className="text-red-500">*</span>
       </label>
       
       {/* Google Maps Component */}
       <GoogleMapComponent 
-        onSelectLocation={(address) => handleMapLocationSelected(address)}
+        onSelectLocation={handleMapLocationSelected}
         apiKey={apiKey}
         mapId={mapId}
       />
       
       {apiKey === '' && (
         <div className="bg-yellow-50 p-3 rounded-lg text-sm text-yellow-800 mb-2">
-          <p className="font-semibold">Map configuration required:</p>
+          <p className="font-semibold">{t('mapConfigRequired')}</p>
           <ol className="list-decimal pl-5 mt-1 space-y-1">
             <li>Create a <span className="font-mono">.env.local</span> file in your project root</li>
             <li>Add <span className="font-mono">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key</span></li>
@@ -105,7 +107,7 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
             setTimeout(() => setShowSuggestions(false), 200);
           }}
           onFocus={() => setShowSuggestions(true)}
-          placeholder="Enter your address or select from map"
+          placeholder={t('locationStep.mapPlaceholder')}
           required
           className={`block w-full pl-10 pr-3 py-3 border ${
             touched && error 
@@ -140,7 +142,7 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
       )}
       
       <p className="text-xs text-gray-500 mt-1">
-        Please select your address from the map or search for it in the field above
+        {t('locationStep.mapHelpText')}
       </p>
     </div>
   );

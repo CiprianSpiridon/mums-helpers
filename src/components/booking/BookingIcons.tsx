@@ -81,5 +81,10 @@ export const FormIcons = {
     <svg className="mr-2 -ml-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
     </svg>
+  ),
+  globe: (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.09c.345 0 .68.03.998.086m1.138 11.914A2.501 2.501 0 0013.5 20H16.5a2.5 2.5 0 002.5-2.5v-1.935M16.945 11H19a2 2 0 012 2v1a2 2 0 01-2 2 2 2 0 00-2 2v2.945m-7.998-11.914A11.936 11.936 0 0012 3c4.21 0 7.803 2.03 9.945 5.135M4.055 8.135A11.936 11.936 0 0012 21c4.21 0 7.803-2.03 9.945-5.135M12 3v18" />
+     </svg>
   )
 }; 

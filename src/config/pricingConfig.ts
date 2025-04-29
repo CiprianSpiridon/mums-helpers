@@ -60,15 +60,16 @@ export const calculateTotalCost = (
   return Math.round(totalCost);
 };
 
-// Service type labels for display
+// Remove original label exports
+/*
 export const SERVICE_LABELS = {
   regular: "Regular Cleaning",
   deep: "Deep Cleaning",
   move: "Move-in/out Cleaning"
 };
 
-// Property type labels for display
 export const PROPERTY_LABELS = {
   house: "House",
   flat: "Flat/Apartment"
 }; 
+*/ 

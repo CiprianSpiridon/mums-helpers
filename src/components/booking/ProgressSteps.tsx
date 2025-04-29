@@ -1,17 +1,23 @@
+'use client'; // Ensure this is a client component
+
 import React from 'react';
+import { useTranslation } from '@/hooks/useTranslation'; // Import hook
 
 interface ProgressStepsProps {
   currentStep: number;
 }
 
 const ProgressSteps: React.FC<ProgressStepsProps> = ({ currentStep }) => {
+  const { t } = useTranslation(); // Use hook
+
   const steps = [
-    { number: 1, label: "Service" },
-    { number: 2, label: "Property" },
-    { number: 3, label: "Schedule" },
-    { number: 4, label: "Location" },
-    { number: 5, label: "Contact" },
-    { number: 6, label: "Confirm" }
+    // Use translation keys
+    { number: 1, label: t('progressSteps.service') },
+    { number: 2, label: t('progressSteps.property') },
+    { number: 3, label: t('progressSteps.schedule') },
+    { number: 4, label: t('progressSteps.location') },
+    { number: 5, label: t('progressSteps.contact') },
+    { number: 6, label: t('progressSteps.confirm') }
   ];
 
   return (
@@ -58,7 +64,9 @@ const ProgressSteps: React.FC<ProgressStepsProps> = ({ currentStep }) => {
       {/* Mobile Progress Indicator */}
       <div className="md:hidden">
         <div className="flex justify-between mb-2">
-          <span className="text-sm font-medium text-pink-600">Step {currentStep} of {steps.length}</span>
+          <span className="text-sm font-medium text-pink-600">
+             {t('progressSteps.stepIndicator', currentStep, steps.length)}
+          </span>
           <span className="text-sm font-medium text-pink-600">{steps[currentStep - 1]?.label}</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
