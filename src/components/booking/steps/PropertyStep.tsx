@@ -39,7 +39,7 @@ const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }
   return (
     <div className="space-y-8 pb-24 md:pb-0">
       <h2 className="text-xl font-bold text-gray-900 mb-2">{t('propertyStep.title')}</h2>
-      <p className="text-gray-600 mb-6">{t('propertyStep.subtitle')}</p>
+      <p className="text-gray-800 mb-6">{t('propertyStep.subtitle')}</p>
       
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-3">
@@ -101,35 +101,28 @@ const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }
             </button>
           ))}
         </div>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-700">
           {t('propertyStep.roomsHelpText')}
         </p>
       </div>
       
-      <div>
-        <div className="flex items-start mt-6">
-          <div className="flex items-center h-5">
-            <input
-              id="cleaning-supplies"
-              type="checkbox"
-              checked={needsCleaningSupplies}
-              onChange={handleCleaningSuppliesChange}
-              className="w-5 h-5 text-pink-500 border-gray-300 rounded focus:ring-pink-500"
-            />
-          </div>
-          <div className="ml-3 text-sm">
-            <label htmlFor="cleaning-supplies" className="font-semibold text-gray-800">
-              {t('propertyStep.cleaningSuppliesLabel')}
-              <span className="ml-2 text-sm font-semibold text-pink-500">
-                (+{CLEANING_SUPPLIES_FEE} {t('aed')})
-              </span>
-            </label>
-            <p className="text-gray-600 mt-1">
-              {t('propertyStep.cleaningSuppliesDesc')}
-            </p>
-          </div>
-        </div>
-      </div>
+      <div className="border-t pt-6 mt-6">
+        <label className="flex items-center cursor-pointer">
+          <input 
+             type="checkbox"
+             name="needsCleaningSupplies"
+             checked={needsCleaningSupplies}
+             onChange={handleCleaningSuppliesChange}
+             className="h-4 w-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+           />
+           <div className={`${isRtl ? 'mr-3' : 'ml-3'}`}>
+             <span className="block text-sm font-semibold text-gray-800">{t('propertyStep.cleaningSuppliesLabel')}</span>
+             <p className="text-gray-700 mt-1">
+                {t('propertyStep.cleaningSuppliesDesc')}
+             </p>
+           </div>
+         </label>
+       </div>
       
       <DesktopPriceDisplay totalCost={totalCost} />
       

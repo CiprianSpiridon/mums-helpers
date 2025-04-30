@@ -4,6 +4,7 @@
  */
 export interface Service {
   id: number;
+  documentId: string;
   serviceTypeId: string;
   displayName: string;
   description?: string;
@@ -21,6 +22,7 @@ export interface Service {
  */
 export interface Customer {
     id: number;
+    documentId: string;
     name: string;
     email: string;
     phoneNumber?: string;
@@ -41,8 +43,8 @@ export interface BookingPayload {
     needsCleaningSupplies: boolean;
     calculatedCost: number;
     notes?: string;
-    customer: number; // Relation: Customer ID
-    service: number; // Relation: Service ID
+    customer: number | string; // Relation: Customer ID or documentId
+    service: number | string; // Relation: Service ID or documentId
     maid?: number; // Relation: Maid ID (Optional for now)
     // Add latitude/longitude if they are added to the Booking schema
   }
@@ -62,6 +64,67 @@ export interface BookingResponse {
     // customer?: { data: { id: number, attributes: Omit<Customer, 'id'> } };
     // service?: { data: { id: number, attributes: Omit<Service, 'id'> } };
   };
+}
+
+/**
+ * Represents the structure of a Booking object fetched for the 'My Bookings' page,
+ * including populated data.
+ */
+export interface FetchedBooking {
+  id: number; // Strapi's internal ID
+  documentId: string; // Strapi's document ID
+  scheduledDateTime: string;
+  address: string;
+  durationHours: number;
+  bookingStatus: string;
+  calculatedCost: number;
+  notes?: string;
+  // Populated data (adjust based on actual population)
+  service?: {
+    displayName?: string; 
+  };
+  customer?: {
+    name?: string;
+    email?: string;
+    phoneNumber?: string;
+  };
+  // Add maid details if populated
+}
+
+/**
+ * Represents the raw structure of a single item in the Strapi API response 
+ * for a booking query with populated customer and service.
+ * Based on observed API output, fields are flattened.
+ */
+export interface StrapiBookingResponseItem {
+  id: number;
+  documentId: string;
+  // --- Fields directly on the item, not nested under attributes ---
+  scheduledDateTime: string;
+  address: string;
+  bookingStatus: string;
+  durationHours: number;
+  calculatedCost: number;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string | null;
+  propertyType?: string;
+  numberOfRooms?: number;
+  needsCleaningSupplies?: boolean;
+  // --- Populated relations (also appear flattened) ---
+  customer: {
+    id: number;
+    documentId: string;
+    name?: string;
+    email?: string;
+    phoneNumber?: string;
+  } | null;
+  service: {
+    id: number;
+    documentId: string;
+    displayName?: string;
+  } | null;
 }
 
 // Define other Strapi types here as needed (e.g., Maid) 

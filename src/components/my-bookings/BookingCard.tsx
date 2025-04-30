@@ -11,7 +11,16 @@ import { getServiceTranslationKey } from '@/lib/formatters';
 import Image from 'next/image'; 
 
 // Define and Export types directly
-export type BookingStatus = 'scheduled' | 'completed' | 'cancelled' | 'all';
+export type BookingStatus = 
+  | 'all' 
+  | 'scheduled' 
+  | 'completed' 
+  | 'cancelled' 
+  | 'submitted' 
+  | 'confirmed' 
+  | 'in_progress' 
+  | 'rescheduled';
+
 export interface Maid {
   name: string;
   rating: number;

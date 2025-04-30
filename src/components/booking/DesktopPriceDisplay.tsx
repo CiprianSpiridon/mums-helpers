@@ -15,7 +15,7 @@ const DesktopPriceDisplay: React.FC<DesktopPriceDisplayProps> = ({ totalCost }) 
       <div className="flex justify-between items-center">
         <div>
           <h3 className="font-medium text-gray-900">{t('estimatedCost')}</h3>
-          <p className="text-xs text-gray-600">{t('basedOnSelection')}</p>
+          <p className="text-xs text-gray-700">{t('basedOnSelection')}</p>
         </div>
         <div className="text-xl font-bold text-pink-600">{t('aed')} {totalCost}</div>
       </div>

@@ -46,7 +46,7 @@ const LocationStep: React.FC<LocationStepProps> = ({
   return (
     <div className="space-y-8 pb-24 md:pb-0">
       <h2 className="text-xl font-bold text-gray-900 mb-2">{t('locationStep.title')}</h2>
-      <p className="text-gray-600 mb-6">{t('locationStep.subtitle')}</p>
+      <p className="text-gray-800 mb-6">{t('locationStep.subtitle')}</p>
       
       <div>
         <label className="block text-sm font-semibold text-gray-800 mb-2">

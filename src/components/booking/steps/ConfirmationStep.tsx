@@ -64,7 +64,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ bookingId, onReset 
           </svg>
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('confirmationStep.title')}</h2>
-        <p className="text-gray-600">
+        <p className="mt-2 text-center text-gray-800">
           {t('confirmationStep.subtitle', name)}
         </p>
       </div>
