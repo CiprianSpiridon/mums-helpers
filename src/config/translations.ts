@@ -100,25 +100,39 @@ export type Translations = {
     // My Bookings Page
     myBookingsPage: {
         title: string;
+        enterEmailOrPhone: string;
+        searchError: string;
+        emailOrPhonePlaceholder: string;
+        searching: string;
+        searchButton: string;
+        loadingBookings: string;
+        noBookingsFound: string;
+        noBookingsDescription: string;
         filterStatus: string;
         filterService: string;
         tabAll: string;
         tabScheduled: string;
         tabCompleted: string;
         tabCancelled: string;
-        noBookingsFound: string;
-        noBookingsDescription: string;
         bookAService: string;
         bookingId: string;
         dateTime: string;
         duration: string;
         location: string;
-        maid: string;
+        helper: string;
         price: string;
         reschedule: string;
         cancel: string;
         bookAgain: string;
         viewDetails: string;
+        resultsTitle: string;
+        promptToSearch: string;
+        statusSubmitted: string;
+        statusConfirmed: string;
+        statusInProgress: string;
+        statusRescheduled: string;
+        assignedMaid: string;
+        assignedHelper: string;
     };
     // General / Common Terms
     common: {
@@ -129,6 +143,7 @@ export type Translations = {
         propertyFlat: string;
         room: string;  // Singular
         rooms: string; // Plural
+        notAvailable: string;
     };
     summary: string;
     totalCost: string;
@@ -239,25 +254,39 @@ export const translations: Translations = {
     },
     myBookingsPage: {
         title: 'My Bookings',
+        enterEmailOrPhone: 'Please enter your email or phone number to search.',
+        searchError: 'An error occurred while searching for bookings.',
+        emailOrPhonePlaceholder: 'Enter Email / Phone Number or Booking ID',
+        searching: 'Searching...',
+        searchButton: 'Find My Bookings',
+        loadingBookings: 'Loading bookings...',
+        noBookingsFound: 'No bookings found',
+        noBookingsDescription: 'We couldn\'t find any bookings associated with that identifier.',
         filterStatus: 'Status',
         filterService: 'Service Type',
         tabAll: 'All',
         tabScheduled: 'Scheduled',
         tabCompleted: 'Completed',
         tabCancelled: 'Cancelled',
-        noBookingsFound: 'No bookings found',
-        noBookingsDescription: 'Try changing your filters or book a new service.',
         bookAService: 'Book a Service',
         bookingId: 'Booking ID',
         dateTime: 'Date & Time',
         duration: 'Duration',
         location: 'Location',
-        maid: 'Maid',
+        helper: 'Helper',
         price: 'Price',
         reschedule: 'Reschedule',
         cancel: 'Cancel',
         bookAgain: 'Book Again',
         viewDetails: 'View Details',
+        resultsTitle: 'Your Bookings',
+        promptToSearch: 'Please enter your email, phone, or booking ID above to find your bookings.',
+        statusSubmitted: 'Submitted',
+        statusConfirmed: 'Confirmed',
+        statusInProgress: 'In Progress',
+        statusRescheduled: 'Rescheduled',
+        assignedMaid: 'Assigned Maid',
+        assignedHelper: 'Assigned Helper',
     },
     common: {
         serviceRegular: 'Regular Cleaning',
@@ -267,6 +296,7 @@ export const translations: Translations = {
         propertyFlat: 'Flat/Apartment',
         room: 'room',
         rooms: 'rooms',
+        notAvailable: 'N/A',
     },
     summary: 'Summary',
     totalCost: 'Total Cost',
@@ -374,25 +404,39 @@ export const translations: Translations = {
     },
     myBookingsPage: {
         title: 'حجوزاتي',
+        enterEmailOrPhone: 'الرجاء إدخال البريد الإلكتروني أو رقم الهاتف للبحث.',
+        searchError: 'حدث خطأ أثناء البحث عن الحجوزات.',
+        emailOrPhonePlaceholder: 'أدخل البريد الإلكتروني / رقم الهاتف أو معرف الحجز',
+        searching: 'جاري البحث...',
+        searchButton: 'البحث عن حجوزاتي',
+        loadingBookings: 'جاري تحميل الحجوزات...',
+        noBookingsFound: 'لم يتم العثور على حجوزات',
+        noBookingsDescription: 'لم نتمكن من العثور على أي حجوزات مرتبطة بهذا المعرف.',
         filterStatus: 'الحالة',
         filterService: 'نوع الخدمة',
         tabAll: 'الكل',
         tabScheduled: 'المجدولة',
         tabCompleted: 'المكتملة',
         tabCancelled: 'الملغاة',
-        noBookingsFound: 'لم يتم العثور على حجوزات',
-        noBookingsDescription: 'حاول تغيير عوامل التصفية أو حجز خدمة جديدة.',
         bookAService: 'احجز خدمة',
         bookingId: 'معرف الحجز',
         dateTime: 'التاريخ والوقت',
         duration: 'المدة',
         location: 'الموقع',
-        maid: 'العاملة',
+        helper: 'المساعدة',
         price: 'السعر',
         reschedule: 'إعادة الجدولة',
         cancel: 'إلغاء',
         bookAgain: 'الحجز مرة أخرى',
         viewDetails: 'عرض التفاصيل',
+        resultsTitle: 'حجوزاتك',
+        promptToSearch: 'الرجاء إدخال بريدك الإلكتروني أو رقم هاتفك أو معرف الحجز أعلاه للعثور على حجوزاتك.',
+        statusSubmitted: 'تم الإرسال',
+        statusConfirmed: 'تم التأكيد',
+        statusInProgress: 'قيد التنفيذ',
+        statusRescheduled: 'تمت إعادة الجدولة',
+        assignedMaid: 'عاملة معينة',
+        assignedHelper: 'مساعدة معينة',
     },
     common: {
         serviceRegular: 'تنظيف عادي',
@@ -402,6 +446,7 @@ export const translations: Translations = {
         propertyFlat: 'شقة',
         room: 'غرفة',
         rooms: 'غرف',
+        notAvailable: 'غير متاح',
     },
     summary: 'ملخص',
     totalCost: 'التكلفة الإجمالية',

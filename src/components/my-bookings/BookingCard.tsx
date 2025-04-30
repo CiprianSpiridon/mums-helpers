@@ -11,7 +11,16 @@ import { getServiceTranslationKey } from '@/lib/formatters';
 import Image from 'next/image'; 
 
 // Define and Export types directly
-export type BookingStatus = 'scheduled' | 'completed' | 'cancelled' | 'all';
+export type BookingStatus = 
+  | 'all' 
+  | 'scheduled' 
+  | 'completed' 
+  | 'cancelled' 
+  | 'submitted' 
+  | 'confirmed' 
+  | 'in_progress' 
+  | 'rescheduled';
+
 export interface Maid {
   name: string;
   rating: number;
@@ -93,7 +102,7 @@ const BookingCard: React.FC<BookingCardProps> = ({ booking, getStatusBadge }) =>
           
           {/* Maid Info */}
           <div>
-            <p className="text-sm font-medium text-gray-500">{t('myBookingsPage.maid')}</p>
+            <p className="text-sm font-medium text-gray-500">{t('myBookingsPage.helper')}</p>
             <div className="flex items-center mt-1">
               <div className={`relative w-8 h-8 bg-gray-200 rounded-full flex-shrink-0 overflow-hidden ${isRtl ? 'ml-2' : 'mr-2'}`}>
                 {booking.maid.image ? (

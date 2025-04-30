@@ -37,7 +37,7 @@ const ContactStep: React.FC<ContactStepProps> = ({
   return (
     <div className="space-y-8 pb-24 md:pb-0">
       <h2 className="text-xl font-bold text-gray-900 mb-2">{t('contactStep.title')}</h2>
-      <p className="text-gray-600 mb-6">{t('contactStep.subtitle')}</p>
+      <p className="text-gray-800 mb-6">{t('contactStep.subtitle')}</p>
       
       <FormSummary
         isCollapsible={true}

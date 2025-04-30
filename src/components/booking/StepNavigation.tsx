@@ -86,7 +86,7 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
         {totalCost !== undefined && (
             <div className="flex justify-between items-center mb-3">
             <div className="flex flex-col justify-center">
-                <span className="text-sm text-gray-600">{t('totalCost')}</span>
+                <span className="text-sm text-gray-700">{t('totalCost')}</span>
                 <span className="text-xl font-bold text-pink-600">{t('aed')} {totalCost}</span>
             </div>
             </div>
@@ -117,6 +117,14 @@ const StepNavigation: React.FC<StepNavigationProps> = ({
              {!isSubmitting && (NextIcon ? React.cloneElement(NextIcon, { className: `${mobileNextIconMargin} w-5 h-5` }) : null)}
           </button>
         </div>
+      </div>
+
+      {/* Price on Desktop */}
+      <div className="hidden md:block text-right">
+        <span className="text-sm text-gray-700">{t('totalCost')}</span>
+        <p className="text-xl font-bold text-gray-900">
+            {t('aed')} {totalCost}
+        </p>
       </div>
     </>
   );

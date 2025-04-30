@@ -75,7 +75,7 @@ const ScheduleStep: React.FC<ScheduleStepProps> = ({
   return (
     <div className="space-y-8 pb-24 md:pb-0">
       <h2 className="text-xl font-bold text-gray-900 mb-2">{t('scheduleStep.title')}</h2>
-      <p className="text-gray-600 mb-6">{t('scheduleStep.subtitle')}</p>
+      <p className="text-gray-800 mb-6">{t('scheduleStep.subtitle')}</p>
       
       {/* Use FormField for Date */}
       <FormField

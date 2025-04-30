@@ -6,6 +6,7 @@ import { useBookingContext } from '@/context/BookingContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import StepNavigation from '../StepNavigation';
 import DesktopPriceDisplay from '../DesktopPriceDisplay';
+import { getServiceTranslationKey } from '@/lib/formatters';
 
 interface ServiceTypeStepProps {
   onNext: () => void;
@@ -55,9 +56,9 @@ const ServiceTypeStep: React.FC<ServiceTypeStepProps> = ({ onNext, totalCost }) 
                 <div className={`p-3 rounded-full ${isRtl ? 'ml-3' : 'mr-3'} ${isSelected ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500'}`}>
                   {IconComponent} 
                 </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-lg">{service.displayName}</h3>
-                  <p className="text-gray-600">{t('serviceStep.fromPrice', service.basePrice)}</p> 
+                <div className="flex-grow">
+                  <h3 className="font-semibold text-gray-900">{t(getServiceTranslationKey(service.serviceTypeId))}</h3>
+                  <p className="text-gray-700">{t('serviceStep.fromPrice', service.basePrice)}</p>
                 </div>
               </div>
               {service.description && (

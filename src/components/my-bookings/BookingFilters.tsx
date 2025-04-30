@@ -4,8 +4,16 @@ import React from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { getServiceTranslationKey } from '@/lib/formatters';
 
-// Define Status type again for clarity
-type BookingStatus = 'scheduled' | 'completed' | 'cancelled' | 'all';
+// Define Status type again for clarity, including all handled statuses
+type BookingStatus = 
+  | 'all' 
+  | 'scheduled' 
+  | 'completed' 
+  | 'cancelled' 
+  | 'submitted' 
+  | 'confirmed' 
+  | 'in_progress' 
+  | 'rescheduled';
 
 interface BookingFiltersProps {
   activeTab: BookingStatus;
@@ -25,10 +33,14 @@ const BookingFilters: React.FC<BookingFiltersProps> = ({
   const { t } = useTranslation();
 
   const tabs: { labelKey: string; status: BookingStatus }[] = [
+    { labelKey: 'myBookingsPage.tabAll', status: 'all' },
     { labelKey: 'myBookingsPage.tabScheduled', status: 'scheduled' },
+    { labelKey: 'myBookingsPage.statusSubmitted', status: 'submitted' },
+    { labelKey: 'myBookingsPage.statusConfirmed', status: 'confirmed' },
+    { labelKey: 'myBookingsPage.statusInProgress', status: 'in_progress' },
     { labelKey: 'myBookingsPage.tabCompleted', status: 'completed' },
+    { labelKey: 'myBookingsPage.statusRescheduled', status: 'rescheduled' },
     { labelKey: 'myBookingsPage.tabCancelled', status: 'cancelled' },
-    // { labelKey: 'myBookingsPage.tabAll', status: 'all' }, // Optional: Add "All" tab if needed
   ];
 
   return (
@@ -66,11 +78,17 @@ const BookingFilters: React.FC<BookingFiltersProps> = ({
             className="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-gray-700"
           >
             <option key="all" value="all">{t('myBookingsPage.tabAll')}</option>
-            {serviceTypeOptions.filter(s => s !== 'all').map(service => (
-              <option key={service} value={service}>
-                {t(getServiceTranslationKey(service))}
-              </option>
-            ))}
+            {serviceTypeOptions.filter(s => s !== 'all').map(service => {
+              const translationKey = getServiceTranslationKey(service);
+              const translatedValue = t(translationKey);
+              // Log the service, key, and translated value for debugging
+              console.log(`[BookingFilters] Service: ${service}, Key: ${translationKey}, Translated: ${translatedValue}`);
+              return (
+                <option key={service} value={service}>
+                  {translatedValue}
+                </option>
+              );
+            })}
           </select>
         </div>
       </div>

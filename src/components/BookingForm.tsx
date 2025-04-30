@@ -189,14 +189,25 @@ const BookingFormContent = () => {
       if (!customer) {
         throw new Error('Failed to find or create customer.');
       }
-      const customerId = customer.id;
 
       // 2. Find Selected Service ID
       const selectedService = services.find(s => s.serviceTypeId === serviceType);
       if (!selectedService) {
         throw new Error('Selected service details not found.');
       }
-      const serviceId = selectedService.id;
+
+      // --- Ensure documentIds exist --- 
+      if (!customer?.documentId) { 
+        console.error('Customer object missing documentId:', customer);
+        throw new Error('Customer document ID is missing.');
+      }
+      if (!selectedService?.documentId) { 
+        console.error('Service object missing documentId:', selectedService);
+        throw new Error('Service document ID is missing.');
+      }
+      const customerDocId = customer.documentId;
+      const serviceDocId = selectedService.documentId;
+      // ------------------------------- 
 
       // 3. Format DateTime (Combine date and time, then format as ISO string)
       // Basic combination - assumes bookingDate is YYYY-MM-DD and bookingTime is HH:MM
@@ -237,12 +248,12 @@ const BookingFormContent = () => {
         needsCleaningSupplies: needsCleaningSupplies,
         calculatedCost: totalCost,
         notes: instructions,
-        customer: customerId,
-        service: serviceId,
+        customer: customerDocId,
+        service: serviceDocId,
         // maid: undefined, // Assign later if needed
         // Add latitude/longitude if schema supports it
       };
-      console.log('Submitting payload:', payload);
+      console.log('Submitting payload (using documentId):', payload);
 
       // 5. Submit Booking
       const createdBooking = await submitBooking(payload);

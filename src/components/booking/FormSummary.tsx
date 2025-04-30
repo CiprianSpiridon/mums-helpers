@@ -68,14 +68,14 @@ const FormSummary: React.FC<FormSummaryProps> = ({ isCollapsible = true }) => {
         <div className="p-4 space-y-2 text-sm">
           <div className="grid grid-cols-2 gap-x-4 gap-y-1">
             <div>
-              <div className="text-gray-500">{t('confirmationStep.serviceLabel')}</div>
+              <div className="text-gray-700">{t('confirmationStep.serviceLabel')}</div>
               <div className="font-medium text-gray-900">
                 {t(getServiceTranslationKey(serviceType))}
               </div>
             </div>
             
             <div>
-              <div className="text-gray-500">{t('confirmationStep.propertyLabel')}</div>
+              <div className="text-gray-700">{t('confirmationStep.propertyLabel')}</div>
               <div className="font-medium text-gray-900">
                 {t(getPropertyTranslationKey(propertyType))}
                 {numRooms > 0 ? `, ${numRooms} ${numRooms === 1 ? t('common.room') : t('common.rooms')}` : ''}
@@ -84,7 +84,7 @@ const FormSummary: React.FC<FormSummaryProps> = ({ isCollapsible = true }) => {
             
             {(bookingDate || bookingTime) && (
               <div>
-                <div className="text-gray-500">{t('confirmationStep.dateTimeLabel')}</div>
+                <div className="text-gray-700">{t('confirmationStep.dateTimeLabel')}</div>
                 <div className="font-medium text-gray-900">
                   {formatDate(bookingDate)}{bookingDate && bookingTime ? ', ' : ''}{formatTime(bookingTime)}
                 </div>
@@ -93,7 +93,7 @@ const FormSummary: React.FC<FormSummaryProps> = ({ isCollapsible = true }) => {
             
             {duration > 0 && (
               <div>
-                <div className="text-gray-500">{t('confirmationStep.durationLabel')}</div>
+                <div className="text-gray-700">{t('confirmationStep.durationLabel')}</div>
                 <div className="font-medium text-gray-900">{duration} {t('scheduleStep.hours')}</div>
               </div>
             )}
@@ -101,7 +101,7 @@ const FormSummary: React.FC<FormSummaryProps> = ({ isCollapsible = true }) => {
           
           {address && (
              <div className="pt-2">
-               <div className="text-gray-500">{t('confirmationStep.addressLabel')}</div>
+               <div className="text-gray-700">{t('confirmationStep.addressLabel')}</div>
                <div className="font-medium text-gray-900">{address}</div>
              </div>
           )}
