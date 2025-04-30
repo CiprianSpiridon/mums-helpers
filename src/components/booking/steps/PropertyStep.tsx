@@ -6,7 +6,6 @@ import { useBookingContext } from '@/context/BookingContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import StepNavigation from '../StepNavigation';
 import DesktopPriceDisplay from '../DesktopPriceDisplay';
-import { CLEANING_SUPPLIES_FEE } from '@/config/pricingConfig';
 
 interface PropertyStepProps {
   onNext: () => void;
