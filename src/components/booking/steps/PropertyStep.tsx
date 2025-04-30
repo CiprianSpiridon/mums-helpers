@@ -6,6 +6,7 @@ import { useBookingContext } from '@/context/BookingContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import StepNavigation from '../StepNavigation';
 import DesktopPriceDisplay from '../DesktopPriceDisplay';
+import { CLEANING_SUPPLIES_FEE } from '@/config/pricingConfig';
 
 interface PropertyStepProps {
   onNext: () => void;
@@ -115,9 +116,14 @@ const PropertyStep: React.FC<PropertyStepProps> = ({ onNext, onBack, totalCost }
              className="h-4 w-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
            />
            <div className={`${isRtl ? 'mr-3' : 'ml-3'}`}>
-             <span className="block text-sm font-semibold text-gray-800">{t('propertyStep.cleaningSuppliesLabel')}</span>
+             <label htmlFor="cleaning-supplies" className="block font-semibold text-gray-800">
+               <span>{t('propertyStep.cleaningSuppliesLabel')}</span>
+               <span className="ml-1 text-xs font-extrabold text-pink-500 inline-block">
+                 (+{CLEANING_SUPPLIES_FEE} {t('aed')})
+               </span>
+             </label>
              <p className="text-gray-700 mt-1">
-                {t('propertyStep.cleaningSuppliesDesc')}
+               {t('propertyStep.cleaningSuppliesDesc')}
              </p>
            </div>
          </label>
