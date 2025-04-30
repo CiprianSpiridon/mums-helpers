@@ -71,7 +71,7 @@ export const calculateTotalCost = (
 };
 
 // Export constants for use in other files
-export { CLEANING_SUPPLIES_FEE };
+export { CLEANING_SUPPLIES_FEE, PROPERTY_MULTIPLIERS };
 
 // Remove original label exports
 /*

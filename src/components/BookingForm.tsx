@@ -9,23 +9,46 @@ import LocationStep from './booking/steps/LocationStep';
 import ContactStep from './booking/steps/ContactStep';
 import ConfirmationStep from './booking/steps/ConfirmationStep';
 import { BookingProvider, useBookingContext } from '../context/BookingContext';
+// Import Strapi API functions
+import { 
+  findCustomerByEmail, 
+  createCustomer, 
+  submitBooking 
+} from '@/lib/strapi';
+// import { Service, BookingPayload, Customer } from '@/types/strapi'; // Remove unused Service import
+import { BookingPayload, Customer } from '@/types/strapi'; // Import only used types
+import { formatISO } from 'date-fns'; // Assuming date-fns is installed for ISO formatting
 
 const BookingFormContent = () => {
   const formRef = useRef<HTMLDivElement>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [bookingComplete, setBookingComplete] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add submitting state
+  const [submissionError, setSubmissionError] = useState<string | null>(null); // Add error state
+  const [createdBookingId, setCreatedBookingId] = useState<number | null>(null); // <-- Add state for booking ID
   
   // State is now managed by BookingContext, access via hook
   const { state, dispatch } = useBookingContext();
-  // Only destructure state needed directly in this component
+  // Destructure all needed state for submission
   const { 
-    // serviceType, propertyType, numRooms, // Unused here
-    bookingDate, bookingTime, 
-    // duration, // Unused here
+    services, // Need the full services array to find the ID
+    serviceType, 
+    propertyType, 
+    numRooms, 
+    bookingDate, 
+    bookingTime, 
+    duration, 
     address, 
-    // instructions, // Unused here
-    name, email, phone, totalCost, // Keep totalCost for StepNavigation
-    errors, touched
+    // latitude, // Comment out unused vars
+    // longitude,
+    instructions, 
+    name, 
+    email, 
+    phone, 
+    needsCleaningSupplies,
+    totalCost, 
+    errors, 
+    touched
   } = state;
 
   // Add useEffect to handle scrolling when step changes
@@ -147,15 +170,95 @@ const BookingFormContent = () => {
     });
   };
 
-  const handleSubmit = () => {
-    // Validation is now called within handleNext for the last step
-    console.log('Form submitted:', state); // Log entire state from context
-      
-    // Simulate successful booking
-    setBookingComplete(true);
-    setTimeout(() => {
+  const handleSubmit = async () => {
+    // Don't submit if already submitting
+    if (isSubmitting) return;
+
+    console.log('Attempting booking submission...');
+    setIsSubmitting(true);
+    setSubmissionError(null);
+
+    try {
+      // 1. Find or Create Customer
+      let customer: Customer | null = await findCustomerByEmail(email);
+      if (!customer) {
+        console.log('Customer not found, creating new customer...');
+        customer = await createCustomer({ name, email, phone });
+        console.log('New customer created:', customer);
+      }
+      if (!customer) {
+        throw new Error('Failed to find or create customer.');
+      }
+      const customerId = customer.id;
+
+      // 2. Find Selected Service ID
+      const selectedService = services.find(s => s.serviceTypeId === serviceType);
+      if (!selectedService) {
+        throw new Error('Selected service details not found.');
+      }
+      const serviceId = selectedService.id;
+
+      // 3. Format DateTime (Combine date and time, then format as ISO string)
+      // Basic combination - assumes bookingDate is YYYY-MM-DD and bookingTime is HH:MM
+      // IMPORTANT: This might need adjustment based on actual date/time picker output
+      // and might fail if date/time is not set. Add validation earlier.
+      let scheduledDateTimeISO = '';
+      if (bookingDate && bookingTime) {
+        try {
+            // Combine date (YYYY-MM-DD) and time (HH:MM:SS.ms) directly using 'T' separator
+            const dateTimeString = `${bookingDate}T${bookingTime}`;
+            console.log('Attempting to parse:', dateTimeString); // Log the string being parsed
+            const dateTimeObj = new Date(dateTimeString);
+
+            // Check if the date object is valid before formatting
+            if (isNaN(dateTimeObj.getTime())) {
+              console.error('Failed to create valid Date object from:', dateTimeString);
+              throw new Error('Invalid date or time combination.');
+            }
+
+            scheduledDateTimeISO = formatISO(dateTimeObj);
+            console.log('Formatted DateTime:', scheduledDateTimeISO);
+        } catch (e) {
+            console.error("Error formatting date/time:", e);
+            throw new Error('Invalid date or time format.');
+        }
+      } else {
+          throw new Error('Booking date and time must be selected.');
+      }
+
+      // 4. Construct Booking Payload
+      const payload: BookingPayload = {
+        scheduledDateTime: scheduledDateTimeISO,
+        address: address,
+        bookingStatus: 'submitted', // Changed from status
+        propertyType: propertyType,
+        numberOfRooms: numRooms,
+        durationHours: duration,
+        needsCleaningSupplies: needsCleaningSupplies,
+        calculatedCost: totalCost,
+        notes: instructions,
+        customer: customerId,
+        service: serviceId,
+        // maid: undefined, // Assign later if needed
+        // Add latitude/longitude if schema supports it
+      };
+      console.log('Submitting payload:', payload);
+
+      // 5. Submit Booking
+      const createdBooking = await submitBooking(payload);
+      console.log('Booking successful:', createdBooking);
+      setCreatedBookingId(createdBooking.id); // <-- Store the ID
+
+      // 6. Update UI on Success
+      setBookingComplete(true);
       setCurrentStep(6); // Move to final confirmation step
-    }, 500);
+
+    } catch (error) {
+      console.error('Booking submission failed:', error);
+      setSubmissionError(error instanceof Error ? error.message : 'An unknown error occurred during submission.');
+    } finally {
+      setIsSubmitting(false); // Ensure submitting state is reset
+    }
   };
 
   const handleReset = () => {
@@ -173,6 +276,14 @@ const BookingFormContent = () => {
     <div className="w-full" ref={formRef} tabIndex={-1}>
       {/* Progress Steps */}
       <ProgressSteps currentStep={currentStep} />
+
+      {/* Display Submission Error */}
+      {submissionError && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 mx-4 md:mx-0" role="alert">
+          <strong className="font-bold">Booking Failed: </strong>
+          <span className="block sm:inline">{submissionError}</span>
+        </div>
+      )}
 
       {/* Form Content */}
       <div className="bg-white rounded-xl pb-6 transition-all duration-300">
@@ -233,6 +344,7 @@ const BookingFormContent = () => {
         {/* Step 6: Confirmation */}
         {currentStep === 6 && bookingComplete && (
           <ConfirmationStep
+            bookingId={createdBookingId} // <-- Pass the ID as prop
             onReset={handleReset}
           />
         )}

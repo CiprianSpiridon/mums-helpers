@@ -30,10 +30,11 @@ const cleaningSuppliesTranslations = {
 };
 
 interface ConfirmationStepProps {
+  bookingId: number | null;
   onReset: () => void;
 }
 
-const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ onReset }) => {
+const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ bookingId, onReset }) => {
   const { state } = useBookingContext();
   const { t, currentLanguage } = useTranslation();
   const {
@@ -72,6 +73,14 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ onReset }) => {
         <h3 className="font-semibold text-lg text-gray-900 mb-4 text-left">
           {t('confirmationStep.summaryTitle')}
         </h3>
+        
+        {/* Display Booking ID if available */}
+        {bookingId && (
+          <div className="flex justify-between py-2 border-b border-gray-200">
+            <span className="text-gray-700 text-left font-medium">{t('confirmationStep.bookingIdLabel')}:</span>
+            <span className="font-semibold text-right text-gray-900">#{bookingId}</span>
+          </div>
+        )}
         
         <div className="space-y-3">
           <div className="flex justify-between py-2 border-b border-gray-200">
