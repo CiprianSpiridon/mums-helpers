@@ -1,0 +1,105 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 📚 Next.js Enterprise Development Best Practices
+
+## 1. Project Structure
+- Use **feature-based folder structure**:
+  - `/features`, `/components`, `/services`, `/hooks`, `/utils`, `/layouts`
+- Organize shared UI components under `/components/ui/`
+- Organize feature-specific components under `/features/<feature-name>/components`
+- Pages (`/pages/`) should only contain minimal routing logic and delegate rendering to feature components
+
+## 2. TypeScript First
+- Always use **TypeScript**
+- Enforce **strict mode** in `tsconfig.json`:
+  ```json
+  {
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  }
+  ```
+- Define types/interfaces for:
+  - API responses
+  - Form inputs
+  - Component props
+  - Context values
+- Use TypeScript utility types (`Partial`, `Pick`, `Omit`) to manage types safely
+
+## 3. API Communication
+- Centralize API logic inside `/services/` or `/lib/api/`
+- Never call APIs directly from components
+- Always use a typed API response
+- Implement global API error handling (e.g., using Axios interceptors or a fetch wrapper)
+- Use React Query, SWR, or TanStack Query for data fetching, caching, and revalidation
+
+## 4. State Management
+- Prefer **local state** where possible (hooks: `useState`, `useReducer`)
+- Use **global state** libraries only when necessary (Zustand, Recoil, Jotai — avoid Redux unless justified)
+- Keep **derived state** close to components to reduce global complexity
+
+## 5. Server Components & Data Fetching
+- In Next.js 13+/App Router, prefer **Server Components** where possible
+- Use `generateMetadata` for SEO metadata generation at the page level
+- Use **loading.tsx** and **error.tsx** boundary files in each route
+- Defer heavy calculations to server-side
+
+## 6. Styling
+- Use **TailwindCSS** or **CSS Modules**
+- Avoid using both global and component styles unless strictly needed
+- Keep Tailwind configuration clean; extract custom themes and utilities
+
+## 7. Performance & Optimization
+- Enable **Image Optimization** (`next/image`)
+- Use **dynamic imports** with suspense (`next/dynamic`) for heavy components
+- Lazy-load non-critical assets
+- Optimize font loading via `next/font`
+- Analyze bundle with `next build && next export` + `@next/bundle-analyzer`
+
+## 8. Code Quality
+- Enforce **ESLint** with Next.js plugin
+- Use **Prettier** with strict formatting rules
+- Enable **Husky** + **lint-staged** for pre-commit checks
+- Use **absolute imports** and **path aliases** (`@/components/`, `@/features/`)
+
+## 9. Security
+- Sanitize all user-generated content (especially if using dangerouslySetInnerHTML)
+- Set security headers (Content-Security-Policy, XSS Protection) via `next.config.js`
+- Protect API routes with authentication middleware where necessary
+
+## 10. Testing
+- Write tests with **Jest** and **React Testing Library**
+- Target testing:
+  - Component rendering and props
+  - API services and integrations
+  - Utility functions and hooks
+- Maintain minimum 70%+ code coverage (adjust based on team maturity)
+
+## 11. CI/CD Readiness
+- Ensure every PR runs:
+  - Type checking
+  - Linting
+  - Unit tests
+- Use Vercel, AWS Amplify, or custom pipelines for deployments
+
+## 12. Documentation
+- Maintain README files per major `/feature/` folder
+- Document all reusable components (props, usage) using JSDoc or Storybook
+- Document public APIs inside `/services/`
+
+---
+
+> ✅ **Summary:** Build it modular. Type it strictly. Fetch it cleanly. Optimize it aggressively. Test it automatically. Secure it proactively.
+
+---
+
+# 📌 Golden Rules
+- "**Keep components pure**" — Inputs in, outputs out. No side effects.
+- "**Smart services, dumb components**" — API, logic, and caching happen outside components.
+- "**Fail fast, fail loud**" — Strict types and early error handling.
+- "**Ship small, ship often**" — Prefer small PRs and fast deployments.
+- "**Secure by default**" — Always treat user inputs and outputs carefully.

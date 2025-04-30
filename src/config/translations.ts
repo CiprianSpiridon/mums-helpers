@@ -74,6 +74,7 @@ export type Translations = {
       title: string;
       subtitle: (name: string) => string;
       summaryTitle: string;
+      bookingIdLabel: string;
       serviceLabel: string;
       propertyLabel: string;
       dateTimeLabel: string;
@@ -138,6 +139,7 @@ export type Translations = {
     invalidPhone: string;
     mapConfigRequired: string;
     mapConfigInstructions: string;
+    startTimeRequired: string;
     aed: string; // Currency abbreviation
   };
 };
@@ -182,7 +184,7 @@ export const translations: Translations = {
       title: 'Schedule Your Cleaning',
       subtitle: 'Select a convenient date and time for your service.',
       dateLabel: 'Date',
-      timeLabel: 'Time',
+      timeLabel: 'Start Time',
       durationLabel: 'Select Duration (min 2 hours)',
       hours: 'hours',
     },
@@ -214,6 +216,7 @@ export const translations: Translations = {
       title: 'Booking Confirmed!',
       subtitle: (name) => `Thank you ${name ? `, ${name}` : ''}! Your booking is confirmed. A confirmation has been sent to your email.`,
       summaryTitle: 'Booking Summary',
+      bookingIdLabel: 'Booking ID',
       serviceLabel: 'Service',
       propertyLabel: 'Property',
       dateTimeLabel: 'Date & Time',
@@ -274,6 +277,7 @@ export const translations: Translations = {
     invalidPhone: 'Please enter a valid phone number',
     mapConfigRequired: 'Map configuration required:',
     mapConfigInstructions: 'Please configure Google Maps API in your environment variables.',
+    startTimeRequired: 'Please select a start time.',
     aed: 'AED',
   },
   ar: {
@@ -315,7 +319,7 @@ export const translations: Translations = {
       title: 'حدد موعد التنظيف الخاص بك',
       subtitle: 'اختر تاريخًا ووقتًا مناسبين لخدمتك.',
       dateLabel: 'التاريخ',
-      timeLabel: 'الوقت',
+      timeLabel: 'وقت البدء',
       durationLabel: 'اختر المدة (ساعتان على الأقل)',
       hours: 'ساعات',
     },
@@ -345,8 +349,9 @@ export const translations: Translations = {
     },
     confirmationStep: {
       title: 'تم تأكيد الحجز!',
-      subtitle: (name) => `شكرًا لك ${name ? `، ${name}` : ''}! تم تأكيد حجزك. تم إرسال تأكيد إلى بريدك الإلكتروني.`,
+      subtitle: (name) => `شكراً لك ${name ? `، ${name}` : ''}! تم تأكيد حجزك. تم إرسال التأكيد إلى بريدك الإلكتروني.`,
       summaryTitle: 'ملخص الحجز',
+      bookingIdLabel: 'معرف الحجز',
       serviceLabel: 'الخدمة',
       propertyLabel: 'العقار',
       dateTimeLabel: 'التاريخ والوقت',
@@ -407,6 +412,7 @@ export const translations: Translations = {
     invalidPhone: 'الرجاء إدخال رقم هاتف صالح',
     mapConfigRequired: 'تكوين الخريطة مطلوب:',
     mapConfigInstructions: 'يرجى تكوين Google Maps API في متغيرات البيئة الخاصة بك.',
+    startTimeRequired: 'يرجى اختيار وقت البدء.',
     aed: 'د.إ',
   },
 }; 
