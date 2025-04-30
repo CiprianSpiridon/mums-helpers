@@ -423,7 +423,7 @@ export const translations: Translations = {
         dateTime: 'التاريخ والوقت',
         duration: 'المدة',
         location: 'الموقع',
-        maid: 'العاملة',
+        helper: 'المساعدة',
         price: 'السعر',
         reschedule: 'إعادة الجدولة',
         cancel: 'إلغاء',
