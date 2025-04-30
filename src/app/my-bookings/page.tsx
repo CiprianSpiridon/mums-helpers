@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -21,7 +21,8 @@ const serviceTypeOptions = [
   { value: 'move', labelKey: 'common.serviceMove' },
 ];
 
-const MyBookingsPage = () => {
+// Define component content separately to wrap in Suspense
+const MyBookingsContent = () => {
   const { t } = useTranslation();
   const searchParams = useSearchParams();
 
@@ -33,7 +34,6 @@ const MyBookingsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearchedOrLoaded, setHasSearchedOrLoaded] = useState(false); // Track search/load attempt
-  // ------------------------------------
 
   // --- Fetching Logic ---
   const fetchBookings = async (searchIdentifier: string) => {
@@ -72,7 +72,6 @@ const MyBookingsPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
-  // -------------------------
 
   // --- Manual Search Submission ---
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -84,7 +83,6 @@ const MyBookingsPage = () => {
     }
     fetchBookings(identifier); // Fetch using the current identifier in the input
   };
-  // ---------------------------
 
   // --- Filtering Logic (keep as is) ---
   const filteredBookings = bookings.filter(booking => {
@@ -92,7 +90,6 @@ const MyBookingsPage = () => {
     const matchesService = serviceFilter === 'all'; // Placeholder - TODO: Implement service filter
     return matchesStatus && matchesService;
   });
-  // -----------------------------------
 
   // --- Status Badge Helper (keep as is) ---
   const getStatusBadge = (status: string) => {
@@ -145,104 +142,115 @@ const MyBookingsPage = () => {
     }
     return <span className={`px-2 py-1 text-xs font-medium rounded-full ${bgColor} ${textColor}`}>{text}</span>;
   };
-  // ------------------------------------
+
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-start pt-20 pb-16 px-0 sm:px-6 bg-gray-50">
+      <div className="w-full max-w-4xl">
+        <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg mb-8">
+          <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">
+            {t('myBookingsPage.title')}
+          </h1>
+
+          {/* --- Search Form (Always visible) --- */} 
+          <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-4 mb-8">
+            <input
+              type="text"
+              value={identifier}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIdentifier(e.target.value)}
+              placeholder={t('myBookingsPage.emailOrPhonePlaceholder')}
+              className="flex-grow px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm disabled:opacity-50 disabled:bg-gray-100 placeholder:text-gray-600 text-gray-900"
+              disabled={isLoading}
+            />
+            <button 
+              type="submit" 
+              disabled={isLoading || !identifier}
+              className="px-4 py-2 text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? t('myBookingsPage.searching') : t('myBookingsPage.searchButton')}
+            </button>
+          </form>
+          {/* ------------------------------------ */}
+
+          {/* Error Display */} 
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded my-6" role="alert">
+              {error}
+            </div>
+          )}
+
+          {/* Loading State */} 
+          {isLoading && (
+            <div className="text-center text-gray-700 py-10">{t('myBookingsPage.loadingBookings')}</div>
+          )}
+          
+          {/* --- Conditionally Render Filters & Results/Empty State --- */} 
+          {!isLoading && hasSearchedOrLoaded && (
+            <>
+              <BookingFilters
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                serviceFilter={serviceFilter}
+                setServiceFilter={setServiceFilter}
+                serviceTypeOptions={serviceTypeOptions.map(opt => opt.value)}
+              />
+
+              <div className="space-y-6 mt-6">
+                {filteredBookings.length === 0 && !error ? (
+                  <EmptyState />
+                ) : (
+                  filteredBookings.map((fetchedBooking: FetchedBooking) => {
+                    const cardBooking: Booking = {
+                      id: fetchedBooking.documentId,
+                      serviceType: fetchedBooking.service?.displayName || 'unknown',
+                      date: fetchedBooking.scheduledDateTime.split('T')[0],
+                      time: fetchedBooking.scheduledDateTime.split('T')[1].substring(0, 5),
+                      duration: fetchedBooking.durationHours,
+                      address: fetchedBooking.address,
+                      status: fetchedBooking.bookingStatus as BookingStatus,
+                      price: fetchedBooking.calculatedCost,
+                      maid: {
+                        name: t('myBookingsPage.assignedHelper'),
+                        rating: 4.9,
+                        image: `https://ui-avatars.com/api/?name=Helper&background=random&color=fff`
+                      }
+                    };
+                    return (
+                      <BookingCard 
+                        key={fetchedBooking.id}
+                        booking={cardBooking}
+                        getStatusBadge={getStatusBadge} 
+                      />
+                    );
+                  })
+                )}
+              </div>
+            </>
+          )}
+          
+          {/* Prompt to search if nothing loaded/searched yet */}
+          {!isLoading && !hasSearchedOrLoaded && !error && (
+               <div className="text-center text-gray-600 py-10 bg-gray-50 rounded-lg">
+                  <p>{t('myBookingsPage.promptToSearch')}</p>
+               </div>
+           )}
+          {/* ------------------------------------------------------- */} 
+        </div>
+      </div>
+    </main>
+  );
+};
+
+// Main page component wraps the content in Suspense
+const MyBookingsPage = () => {
+  // Translations needed for fallback can be fetched here if necessary
+  // const { t } = useTranslation(); 
 
   return (
     <>
       <Header />
-      <main className="flex min-h-screen flex-col items-center justify-start pt-20 pb-16 px-0 sm:px-6 bg-gray-50">
-        <div className="w-full max-w-4xl">
-          <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg mb-8">
-            <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent">
-              {t('myBookingsPage.title')}
-            </h1>
-
-            {/* --- Search Form (Always visible) --- */} 
-            <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-4 mb-8">
-              <input
-                type="text"
-                value={identifier}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIdentifier(e.target.value)}
-                placeholder={t('myBookingsPage.emailOrPhonePlaceholder')}
-                className="flex-grow px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm disabled:opacity-50 disabled:bg-gray-100 placeholder:text-gray-600 text-gray-900"
-                disabled={isLoading}
-              />
-              <button 
-                type="submit" 
-                disabled={isLoading || !identifier}
-                className="px-4 py-2 text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? t('myBookingsPage.searching') : t('myBookingsPage.searchButton')}
-              </button>
-            </form>
-            {/* ------------------------------------ */}
-
-            {/* Error Display */} 
-            {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded my-6" role="alert">
-                {error}
-              </div>
-            )}
-
-            {/* Loading State */} 
-            {isLoading && (
-              <div className="text-center text-gray-700 py-10">{t('myBookingsPage.loadingBookings')}</div>
-            )}
-            
-            {/* --- Conditionally Render Filters & Results/Empty State --- */} 
-            {!isLoading && hasSearchedOrLoaded && (
-              <>
-                <BookingFilters
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
-                  serviceFilter={serviceFilter}
-                  setServiceFilter={setServiceFilter}
-                  serviceTypeOptions={serviceTypeOptions.map(opt => opt.value)}
-                />
-
-                <div className="space-y-6 mt-6">
-                  {filteredBookings.length === 0 && !error ? (
-                    <EmptyState />
-                  ) : (
-                    filteredBookings.map((fetchedBooking: FetchedBooking) => {
-                      const cardBooking: Booking = {
-                        id: fetchedBooking.documentId,
-                        serviceType: fetchedBooking.service?.displayName || 'unknown',
-                        date: fetchedBooking.scheduledDateTime.split('T')[0],
-                        time: fetchedBooking.scheduledDateTime.split('T')[1].substring(0, 5),
-                        duration: fetchedBooking.durationHours,
-                        address: fetchedBooking.address,
-                        status: fetchedBooking.bookingStatus as BookingStatus,
-                        price: fetchedBooking.calculatedCost,
-                        maid: {
-                          name: t('myBookingsPage.assignedHelper'),
-                          rating: 4.9,
-                          image: `https://ui-avatars.com/api/?name=Helper&background=random&color=fff`
-                        }
-                      };
-                      return (
-                        <BookingCard 
-                          key={fetchedBooking.id}
-                          booking={cardBooking}
-                          getStatusBadge={getStatusBadge} 
-                        />
-                      );
-                    })
-                  )}
-                </div>
-              </>
-            )}
-            
-            {/* Prompt to search if nothing loaded/searched yet */}
-            {!isLoading && !hasSearchedOrLoaded && !error && (
-                 <div className="text-center text-gray-600 py-10 bg-gray-50 rounded-lg">
-                    <p>{t('myBookingsPage.promptToSearch')}</p>
-                 </div>
-             )}
-            {/* ------------------------------------------------------- */} 
-          </div>
-        </div>
-      </main>
+      <Suspense fallback={<div className="text-center py-10">Loading bookings...</div>}> 
+        <MyBookingsContent />
+      </Suspense>
       <Footer />
     </>
   );
